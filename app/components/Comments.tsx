@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
 
-// Extend the global Window interface for TypeScript
 declare global {
   interface Window {
     turnstile?: {
@@ -9,10 +8,9 @@ declare global {
     };
   }
 }
-
-// This ensures TypeScript applies the declaration immediately
 export {};
-  type Comment = {
+
+type Comment = {
   id: string;
   parent_id: string | null;
   target_type: 'news' | 'show' | 'video';
@@ -25,9 +23,25 @@ export {};
   upvotes: number;
   created_at: string;
 };
+      render?: (selector: string, options?: any) => void;
+    };
+  }
+}
+export {};
 
-export default function Comments({
-  targetType,
+type Comment = {
+  id: string;
+  parent_id: string | null;
+  target_type: 'news' | 'show' | 'video';
+  target_id: string;
+  content: string;
+  guest_name: string | null;
+  user_id: string | null;
+  is_deleted: boolean;
+  is_pinned: boolean;
+  upvotes: number;
+  created_at: string;
+};
   targetId,
 }: {
   targetType: 'news' | 'show' | 'video';
