@@ -8,6 +8,7 @@ declare global {
     };
   }
 }
+
 export {};
 
 type Comment = {
@@ -23,7 +24,7 @@ type Comment = {
   upvotes: number;
   created_at: string;
 };
-     
+
 export default function Comments({
   targetType,
   targetId,
@@ -42,7 +43,6 @@ export default function Comments({
   const [cfToken, setCfToken] = useState('');
 
   useEffect(() => {
-    // Safely render Cloudflare Turnstile if available
     window?.turnstile?.render?.('#wbn-cf', {
       sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
       callback: (t: string) => setCfToken(t),
@@ -50,7 +50,7 @@ export default function Comments({
   }, []);
 
   async function load(p = 1) {
-    setLoading(true); // <-- lowercase true
+    setLoading(true);
     const url = new URL('/api/comments', window.location.origin);
     url.searchParams.set('targetType', targetType);
     url.searchParams.set('targetId', targetId);
@@ -60,7 +60,7 @@ export default function Comments({
     setItems(j.items || []);
     setTotal(j.total || 0);
     setPage(j.page || 1);
-    setLoading(false); // <-- lowercase false
+    setLoading(false);
   }
 
   useEffect(() => {
@@ -116,7 +116,6 @@ export default function Comments({
   return (
     <section className="max-w-3xl mx-auto my-10">
       <h3 className="text-2xl font-semibold mb-4">Comments</h3>
-
       <div className="rounded-xl border bg-white p-4 mb-6">
         <input
           className="w-full border rounded px-3 py-2 mb-2"
@@ -132,7 +131,10 @@ export default function Comments({
           onChange={(e) => setText(e.target.value)}
         />
         <div id="wbn-cf" className="my-2" />
-        <button onClick={() => post()} className="mt-2 px-4 py-2 rounded bg-neutral-900 text-white">
+        <button
+          onClick={() => post()}
+          className="mt-2 px-4 py-2 rounded bg-neutral-900 text-white"
+        >
           Post
         </button>
       </div>
@@ -144,18 +146,33 @@ export default function Comments({
           {items.map((c) => (
             <li key={c.id} className="rounded-xl border bg-white p-4">
               <div className="text-sm text-neutral-600">
-                <strong className="text-neutral-900">{c.guest_name || 'Member'}</strong>
-                <span className="ml-2">{new Date(c.created_at).toLocaleString()}</span>
+                <strong className="text-neutral-900">
+                  {c.guest_name || 'Member'}
+                </strong>
+                <span className="ml-2">
+                  {new Date(c.created_at).toLocaleString()}
+                </span>
               </div>
-              <div className="mt-2">{c.is_deleted ? <em>[removed]</em> : c.content}</div>
+              <div className="mt-2">
+                {c.is_deleted ? <em>[removed]</em> : c.content}
+              </div>
               <div className="mt-3 flex gap-3">
-                <button onClick={() => toggleReplies(c.id)} className="underline">
+                <button
+                  onClick={() => toggleReplies(c.id)}
+                  className="underline"
+                >
                   View replies
                 </button>
-                <button onClick={() => vote(c.id, 1)} className="border rounded px-2">
+                <button
+                  onClick={() => vote(c.id, 1)}
+                  className="border rounded px-2"
+                >
                   ▲ {c.upvotes || 0}
                 </button>
-                <button onClick={() => vote(c.id, -1)} className="border rounded px-2">
+                <button
+                  onClick={() => vote(c.id, -1)}
+                  className="border rounded px-2"
+                >
                   ▼
                 </button>
               </div>
@@ -165,8 +182,12 @@ export default function Comments({
                   {replies[c.id].map((r) => (
                     <li key={r.id} className="border rounded p-2 bg-white">
                       <div className="text-xs text-neutral-600">
-                        <strong className="text-neutral-900">{r.guest_name || 'Member'}</strong>
-                        <span className="ml-2">{new Date(r.created_at).toLocaleString()}</span>
+                        <strong className="text-neutral-900">
+                          {r.guest_name || 'Member'}
+                        </strong>
+                        <span className="ml-2">
+                          {new Date(r.created_at).toLocaleString()}
+                        </span>
                       </div>
                       <div>{r.is_deleted ? <em>[removed]</em> : r.content}</div>
                     </li>
@@ -201,3 +222,4 @@ export default function Comments({
       )}
     </section>
   );
+}
