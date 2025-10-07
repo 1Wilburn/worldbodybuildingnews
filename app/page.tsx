@@ -1,0 +1,1 @@
+export default function Home(){return(<div className='space-y-4'><h1 className='text-3xl font-semibold'>World Bodybuilding News</h1><p>Welcome! Use the Search to find shows, winners, athletes, videos, and more.</p><a className='inline-block px-4 py-2 rounded bg-neutral-900 text-white' href='/search'>Go to Search</a></div>);}

@@ -1,0 +1,1 @@
+import { MeiliSearch } from 'meilisearch'; export const meili=new MeiliSearch({host:process.env.MEILI_HOST!,apiKey:process.env.MEILI_API_KEY!}); export async function multiSearch(qs:any){return meili.multiSearch({queries:qs});}
