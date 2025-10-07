@@ -24,17 +24,7 @@ type Comment = {
   created_at: string;
 };
      
-  id: string;
-  parent_id: string | null;
-  target_type: 'news' | 'show' | 'video';
-  target_id: string;
-  content: string;
-  guest_name: string | null;
-  user_id: string | null;
-  is_deleted: boolean;
-  is_pinned: boolean;
-  upvotes: number;
-  created_at: string;
+  
 };
   targetId,
 }: {
