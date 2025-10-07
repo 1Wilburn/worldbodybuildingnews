@@ -6,6 +6,9 @@ type Federation = {
   calendar_url?: string;
   registration_url?: string;
   instagram?: string;
+  x_twitter?: string;
+  youtube?: string;
+  country?: string;
 };
 
 function norm(u?: string) {
@@ -16,7 +19,9 @@ function norm(u?: string) {
   return 'https://' + s;
 }
 
-export default function FederationOfficialSources({ federation }: { federation: Federation }) {
+export default function FederationOfficialSources(
+  { fed }: { fed: Federation }
+) {
   const official = norm(federation.official_url);
   const rules = norm(federation.rules_url);
   const calendar = norm(federation.calendar_url);
