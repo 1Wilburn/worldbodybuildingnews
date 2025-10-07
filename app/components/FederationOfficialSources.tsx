@@ -1,343 +1,280 @@
-// trigger deploy
-type Federation = {
-  name: string;
-  official_url?: string;
-  rules_url?: string;
-  calendar_url?: string;
-  registration_url?: string;
-  instagram?: string;
-  x_twitter?: string;
-  youtube?: string;
-  country?: string;
-};
-
+// hard reset 2025-10-07 16:15
 function norm(u?: string) {
   if (!u) return null;
   const s: string = u.trim();
   if (s.startsWith('http')) return s;
   if (s.startsWith('@')) return 'https://instagram.com/' + s.slice(1);
-  return 'https://' + s;
+  return s; // do NOT auto-prepend https:// here; these may be relative paths in CMS
 }
 
-export default function FederationOfficialSources(
-  { fed }: { fed: Federation }
-) {
-  const official = norm(federation.official_url);
-  const rules = norm(federation.rules_url);
-  const calendar = norm(federation.calendar_url);
-  const registration = norm(federation.registration_url);
-  const instagram = norm(federation.instagram);
+export default function FederationOfficialSources({
+  federation,
+}: {
+  federation: {
+    name: string;
+    official_url?: string;
+    rules_url?: string;
+    calendar_url?: string;
+    registration_url?: string;
+    instagram?: string;
+    x_twitter?: string;
+    youtube?: string;
+    country?: string;
+  };
+}) {
+  const rows: { label: string; href?: string }[] = [];
+
+  if (federation.official_url) rows.push({ label: 'Official Website', href: federation.official_url });
+  if (federation.rules_url) rows.push({ label: 'Rules & Divisions', href: federation.rules_url });
+  if (federation.calendar_url) rows.push({ label: 'Competition Calendar', href: federation.calendar_url });
+  if (federation.registration_url) rows.push({ label: 'Athlete Registration', href: federation.registration_url });
+
+  const ig = norm(federation.instagram);
+  const tw = norm(federation.x_twitter);
+  const yt = norm(federation.youtube);
+
+  if (ig) rows.push({ label: 'Instagram', href: ig });
+  if (tw) rows.push({ label: 'X (Twitter)', href: tw });
+  if (yt) rows.push({ label: 'YouTube', href: yt });
 
   return (
-    <aside className="text-sm text-neutral-700">
-      <h3 className="font-semibold mb-2">Official Sources</h3>
-      <ul className="space-y-1">
-        {official && (
-          <li>
-            <a href={official} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
-              Official Website
-            </a>
-          </li>
-        )}
-        {rules && (
-          <li>
-            <a href={rules} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
-              Rules
-            </a>
-          </li>
-        )}
-        {calendar && (
-          <li>
-            <a href={calendar} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
-              Calendar
-            </a>
-          </li>
-        )}
-        {registration && (
-          <li>
-            <a href={registration} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
-              Registration
-            </a>
-          </li>
-        )}
-        {instagram && (
-          <li>
-            <a href={instagram} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
-              Instagram
-            </a>
-          </li>
-        )}
-      </ul>
+    <aside className="rounded-xl border bg-white p-4">
+      <h3 className="text-lg font-semibold mb-3">Official Sources</h3>
+
+      {rows.length ? (
+        <ul className="space-y-2">
+          {rows.map((r, i) => (
+            <li key={i}>
+              {r.href ? (
+                <a href={r.href} className="text-blue-700 underline break-all" target="_blank" rel="noopener noreferrer">
+                  {r.label}
+                </a>
+              ) : (
+                <span>{r.label}</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-neutral-600 text-sm">No official links on file yet.</p>
+      )}
+
+      {federation.country && (
+        <div className="mt-4 text-sm text-neutral-700">
+          <span className="font-medium">Primary Region: </span>
+          {federation.country}
+        </div>
+      )}
     </aside>
   );
-}// trigger deploy
-type Federation = {
-  name: string;
-  official_url?: string;
-  rules_url?: string;
-  calendar_url?: string;
-  registration_url?: string;
-  instagram?: string;
-};
-
+}
+// hard reset 2025-10-07 16:15
 function norm(u?: string) {
   if (!u) return null;
   const s: string = u.trim();
   if (s.startsWith('http')) return s;
   if (s.startsWith('@')) return 'https://instagram.com/' + s.slice(1);
-  return 'https://' + s;
+  return s; // do NOT auto-prepend https:// here; these may be relative paths in CMS
 }
 
-export default function FederationOfficialSources({ federation }: { federation: Federation }) {
-  const official = norm(federation.official_url);
-  const rules = norm(federation.rules_url);
-  const calendar = norm(federation.calendar_url);
-  const registration = norm(federation.registration_url);
-  const instagram = norm(federation.instagram);
+export default function FederationOfficialSources({
+  federation,
+}: {
+  federation: {
+    name: string;
+    official_url?: string;
+    rules_url?: string;
+    calendar_url?: string;
+    registration_url?: string;
+    instagram?: string;
+    x_twitter?: string;
+    youtube?: string;
+    country?: string;
+  };
+}) {
+  const rows: { label: string; href?: string }[] = [];
+
+  if (federation.official_url) rows.push({ label: 'Official Website', href: federation.official_url });
+  if (federation.rules_url) rows.push({ label: 'Rules & Divisions', href: federation.rules_url });
+  if (federation.calendar_url) rows.push({ label: 'Competition Calendar', href: federation.calendar_url });
+  if (federation.registration_url) rows.push({ label: 'Athlete Registration', href: federation.registration_url });
+
+  const ig = norm(federation.instagram);
+  const tw = norm(federation.x_twitter);
+  const yt = norm(federation.youtube);
+
+  if (ig) rows.push({ label: 'Instagram', href: ig });
+  if (tw) rows.push({ label: 'X (Twitter)', href: tw });
+  if (yt) rows.push({ label: 'YouTube', href: yt });
 
   return (
-    <aside className="text-sm text-neutral-700">
-      <h3 className="font-semibold mb-2">Official Sources</h3>
-      <ul className="space-y-1">
-        {official && (
-          <li>
-            <a href={official} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
-              Official Website
-            </a>
-          </li>
-        )}
-        {rules && (
-          <li>
-            <a href={rules} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
-              Rules
-            </a>
-          </li>
-        )}
-        {calendar && (
-          <li>
-            <a href={calendar} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
-              Calendar
-            </a>
-          </li>
-        )}
-        {registration && (
-          <li>
-            <a href={registration} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
-              Registration
-            </a>
-          </li>
-        )}
-        {instagram && (
-          <li>
-            <a href={instagram} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
-              Instagram
-            </a>
-          </li>
-        )}
-      </ul>
+    <aside className="rounded-xl border bg-white p-4">
+      <h3 className="text-lg font-semibold mb-3">Official Sources</h3>
+
+      {rows.length ? (
+        <ul className="space-y-2">
+          {rows.map((r, i) => (
+            <li key={i}>
+              {r.href ? (
+                <a href={r.href} className="text-blue-700 underline break-all" target="_blank" rel="noopener noreferrer">
+                  {r.label}
+                </a>
+              ) : (
+                <span>{r.label}</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-neutral-600 text-sm">No official links on file yet.</p>
+      )}
+
+      {federation.country && (
+        <div className="mt-4 text-sm text-neutral-700">
+          <span className="font-medium">Primary Region: </span>
+          {federation.country}
+        </div>
+      )}
     </aside>
   );
-}// trigger deploy
-type Federation = {
-  name: string;
-  official_url?: string;
-  rules_url?: string;
-  calendar_url?: string;
-  registration_url?: string;
-  instagram?: string;
-};
-
+}
+// hard reset 2025-10-07 16:15
 function norm(u?: string) {
   if (!u) return null;
   const s: string = u.trim();
   if (s.startsWith('http')) return s;
   if (s.startsWith('@')) return 'https://instagram.com/' + s.slice(1);
-  return 'https://' + s;
+  return s; // do NOT auto-prepend https:// here; these may be relative paths in CMS
 }
 
-export default function FederationOfficialSources({ federation }: { federation: Federation }) {
-  const official = norm(federation.official_url);
-  const rules = norm(federation.rules_url);
-  const calendar = norm(federation.calendar_url);
-  const registration = norm(federation.registration_url);
-  const instagram = norm(federation.instagram);
+export default function FederationOfficialSources({
+  federation,
+}: {
+  federation: {
+    name: string;
+    official_url?: string;
+    rules_url?: string;
+    calendar_url?: string;
+    registration_url?: string;
+    instagram?: string;
+    x_twitter?: string;
+    youtube?: string;
+    country?: string;
+  };
+}) {
+  const rows: { label: string; href?: string }[] = [];
+
+  if (federation.official_url) rows.push({ label: 'Official Website', href: federation.official_url });
+  if (federation.rules_url) rows.push({ label: 'Rules & Divisions', href: federation.rules_url });
+  if (federation.calendar_url) rows.push({ label: 'Competition Calendar', href: federation.calendar_url });
+  if (federation.registration_url) rows.push({ label: 'Athlete Registration', href: federation.registration_url });
+
+  const ig = norm(federation.instagram);
+  const tw = norm(federation.x_twitter);
+  const yt = norm(federation.youtube);
+
+  if (ig) rows.push({ label: 'Instagram', href: ig });
+  if (tw) rows.push({ label: 'X (Twitter)', href: tw });
+  if (yt) rows.push({ label: 'YouTube', href: yt });
 
   return (
-    <aside className="text-sm text-neutral-700">
-      <h3 className="font-semibold mb-2">Official Sources</h3>
-      <ul className="space-y-1">
-        {official && (
-          <li>
-            <a href={official} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
-              Official Website
-            </a>
-          </li>
-        )}
-        {rules && (
-          <li>
-            <a href={rules} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
-              Rules
-            </a>
-          </li>
-        )}
-        {calendar && (
-          <li>
-            <a href={calendar} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
-              Calendar
-            </a>
-          </li>
-        )}
-        {registration && (
-          <li>
-            <a href={registration} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
-              Registration
-            </a>
-          </li>
-        )}
-        {instagram && (
-          <li>
-            <a href={instagram} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
-              Instagram
-            </a>
-          </li>
-        )}
-      </ul>
+    <aside className="rounded-xl border bg-white p-4">
+      <h3 className="text-lg font-semibold mb-3">Official Sources</h3>
+
+      {rows.length ? (
+        <ul className="space-y-2">
+          {rows.map((r, i) => (
+            <li key={i}>
+              {r.href ? (
+                <a href={r.href} className="text-blue-700 underline break-all" target="_blank" rel="noopener noreferrer">
+                  {r.label}
+                </a>
+              ) : (
+                <span>{r.label}</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-neutral-600 text-sm">No official links on file yet.</p>
+      )}
+
+      {federation.country && (
+        <div className="mt-4 text-sm text-neutral-700">
+          <span className="font-medium">Primary Region: </span>
+          {federation.country}
+        </div>
+      )}
     </aside>
   );
-}// trigger deploy
-type Federation = {
-  name: string;
-  official_url?: string;
-  rules_url?: string;
-  calendar_url?: string;
-  registration_url?: string;
-  instagram?: string;
-};
-
+}
+// hard reset 2025-10-07 16:15
 function norm(u?: string) {
   if (!u) return null;
   const s: string = u.trim();
   if (s.startsWith('http')) return s;
   if (s.startsWith('@')) return 'https://instagram.com/' + s.slice(1);
-  return 'https://' + s;
+  return s; // do NOT auto-prepend https:// here; these may be relative paths in CMS
 }
 
-export default function FederationOfficialSources({ federation }: { federation: Federation }) {
-  const official = norm(federation.official_url);
-  const rules = norm(federation.rules_url);
-  const calendar = norm(federation.calendar_url);
-  const registration = norm(federation.registration_url);
-  const instagram = norm(federation.instagram);
+export default function FederationOfficialSources({
+  federation,
+}: {
+  federation: {
+    name: string;
+    official_url?: string;
+    rules_url?: string;
+    calendar_url?: string;
+    registration_url?: string;
+    instagram?: string;
+    x_twitter?: string;
+    youtube?: string;
+    country?: string;
+  };
+}) {
+  const rows: { label: string; href?: string }[] = [];
+
+  if (federation.official_url) rows.push({ label: 'Official Website', href: federation.official_url });
+  if (federation.rules_url) rows.push({ label: 'Rules & Divisions', href: federation.rules_url });
+  if (federation.calendar_url) rows.push({ label: 'Competition Calendar', href: federation.calendar_url });
+  if (federation.registration_url) rows.push({ label: 'Athlete Registration', href: federation.registration_url });
+
+  const ig = norm(federation.instagram);
+  const tw = norm(federation.x_twitter);
+  const yt = norm(federation.youtube);
+
+  if (ig) rows.push({ label: 'Instagram', href: ig });
+  if (tw) rows.push({ label: 'X (Twitter)', href: tw });
+  if (yt) rows.push({ label: 'YouTube', href: yt });
 
   return (
-    <aside className="text-sm text-neutral-700">
-      <h3 className="font-semibold mb-2">Official Sources</h3>
-      <ul className="space-y-1">
-        {official && (
-          <li>
-            <a href={official} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
-              Official Website
-            </a>
-          </li>
-        )}
-        {rules && (
-          <li>
-            <a href={rules} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
-              Rules
-            </a>
-          </li>
-        )}
-        {calendar && (
-          <li>
-            <a href={calendar} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
-              Calendar
-            </a>
-          </li>
-        )}
-        {registration && (
-          <li>
-            <a href={registration} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
-              Registration
-            </a>
-          </li>
-        )}
-        {instagram && (
-          <li>
-            <a href={instagram} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
-              Instagram
-            </a>
-          </li>
-        )}
-      </ul>
-    </aside>
-  );
-}// trigger deploy
-type Federation = {
-  name: string;
-  official_url?: string;
-  rules_url?: string;
-  calendar_url?: string;
-  registration_url?: string;
-  instagram?: string;
-};
+    <aside className="rounded-xl border bg-white p-4">
+      <h3 className="text-lg font-semibold mb-3">Official Sources</h3>
 
-function norm(u?: string) {
-  if (!u) return null;
-  const s: string = u.trim();
-  if (s.startsWith('http')) return s;
-  if (s.startsWith('@')) return 'https://instagram.com/' + s.slice(1);
-  return 'https://' + s;
-}
+      {rows.length ? (
+        <ul className="space-y-2">
+          {rows.map((r, i) => (
+            <li key={i}>
+              {r.href ? (
+                <a href={r.href} className="text-blue-700 underline break-all" target="_blank" rel="noopener noreferrer">
+                  {r.label}
+                </a>
+              ) : (
+                <span>{r.label}</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-neutral-600 text-sm">No official links on file yet.</p>
+      )}
 
-export default function FederationOfficialSources({ federation }: { federation: Federation }) {
-  const official = norm(federation.official_url);
-  const rules = norm(federation.rules_url);
-  const calendar = norm(federation.calendar_url);
-  const registration = norm(federation.registration_url);
-  const instagram = norm(federation.instagram);
-
-  return (
-    <aside className="text-sm text-neutral-700">
-      <h3 className="font-semibold mb-2">Official Sources</h3>
-      <ul className="space-y-1">
-        {official && (
-          <li>
-            <a href={official} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
-              Official Website
-            </a>
-          </li>
-        )}
-        {rules && (
-          <li>
-            <a href={rules} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
-              Rules
-            </a>
-          </li>
-        )}
-        {calendar && (
-          <li>
-            <a href={calendar} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
-              Calendar
-            </a>
-          </li>
-        )}
-        {registration && (
-          <li>
-            <a href={registration} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
-              Registration
-            </a>
-          </li>
-        )}
-        {instagram && (
-          <li>
-            <a href={instagram} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
-              Instagram
-            </a>
-          </li>
-        )}
-      </ul>
+      {federation.country && (
+        <div className="mt-4 text-sm text-neutral-700">
+          <span className="font-medium">Primary Region: </span>
+          {federation.country}
+        </div>
+      )}
     </aside>
   );
 }
-
-fix: properly declare Federation type and rebuild component
