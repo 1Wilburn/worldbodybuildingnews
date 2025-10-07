@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
 
-// Tell TypeScript that window.turnstile can exist
+// Extend the global Window interface for TypeScript
 declare global {
   interface Window {
     turnstile?: {
@@ -10,7 +10,8 @@ declare global {
   }
 }
 
-type Comment = {
+// This ensures TypeScript applies the declaration immediately
+export {};
   id: string;
   parent_id: string | null;
   target_type: 'news' | 'show' | 'video';
