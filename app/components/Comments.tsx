@@ -12,6 +12,7 @@ declare global {
 
 // This ensures TypeScript applies the declaration immediately
 export {};
+  type Comment = {
   id: string;
   parent_id: string | null;
   target_type: 'news' | 'show' | 'video';
