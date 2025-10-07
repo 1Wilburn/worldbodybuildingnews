@@ -23,13 +23,7 @@ type Comment = {
   upvotes: number;
   created_at: string;
 };
-      render?: (selector: string, options?: any) => void;
-    };
-  }
-}
-export {};
-
-type Comment = {
+     
   id: string;
   parent_id: string | null;
   target_type: 'news' | 'show' | 'video';
