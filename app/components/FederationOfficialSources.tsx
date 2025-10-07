@@ -64,4 +64,3 @@ export default function FederationOfficialSources(
     </aside>
   );
 }
-fix: export type Federation
