@@ -24,8 +24,8 @@ type Comment = {
   created_at: string;
 };
      
-  
-};
+ export default function Comments({
+  targetType,
   targetId,
 }: {
   targetType: 'news' | 'show' | 'video';
