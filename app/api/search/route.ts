@@ -1,30 +1,37 @@
+// app/api/search/route.ts
 import { NextResponse } from 'next/server';
 
-export async function GET(request: Request) {
+const host = process.env.MEILI_HOST; // e.g. https://meili-xxxx.selhosting.com
+const apiKey = process.env.MEILI_API_KEY; // your “Search” or “Master” key
+
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const q = (searchParams.get('q') || '').trim();
+
+  // Empty query → empty result (not an error)
+  if (!q) return NextResponse.json({ hits: [], query: q });
+
+  // Meili not configured yet
+  if (!host || !apiKey) {
+    return NextResponse.json(
+      { error: 'Search not configured (set MEILI_HOST and MEILI_API_KEY in Vercel)' },
+      { status: 500 }
+    );
+  }
+
   try {
-    const { searchParams } = new URL(request.url);
-    const q = (searchParams.get('q') || '').trim();
+    const res = await fetch(`${host}/indexes/bodybuilding/search`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({ q, limit: 10 }),
+    });
 
-    const MEILI_HOST = process.env.MEILI_HOST;
-    const MEILI_SEARCH_KEY = process.env.MEILI_SEARCH_KEY;
-
-    if (!q) {
-      return NextResponse.json({ ok: true, items: [], total: 0, message: 'Empty query' });
-    }
-
-    if (!MEILI_HOST || !MEILI_SEARCH_KEY) {
-      return NextResponse.json({
-        ok: true,
-        items: [],
-        total: 0,
-        message: 'Meilisearch not configured yet; placeholder result.',
-        echo: q,
-      });
-    }
-
-    // TODO: wire to Meilisearch here next
-    return NextResponse.json({ ok: true, items: [], total: 0, message: 'Meilisearch stub', q });
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message || 'search error' }, { status: 500 });
+    const data = await res.json();
+    return NextResponse.json(data);
+  } catch (err: any) {
+    return NextResponse.json({ error: err?.message || 'Search failed' }, { status: 500 });
   }
 }
