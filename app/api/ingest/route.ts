@@ -1,6 +1,6 @@
 // app/api/ingest/route.ts
 import { NextResponse } from "next/server";
-import { MeiliSearch } from "meilisearch";
+import { MeiliSearch, Index } from "meilisearch";
 import crypto from "node:crypto";
 
 // ───────────────────────────────────────────────────────────
@@ -179,12 +179,20 @@ export async function GET(req: Request) {
     seen.add(d.id);
     return true;
   });
+// Ensure TypeScript knows this is a real Index
+const index: Index<any> = client.index("bodybuilding");
 
-  // Index
-  import { Index } from "meilisearch";
-
-const index = client.index('bodybuilding') as Index<any>;
+// Add the unique documents
 const task = await index.addDocuments(unique);
+
+// Optionally wait until it's done:
+// await client.waitForTask(task.taskUid);
+
+return NextResponse.json({
+  ok: true,
+  added: unique.length,
+  taskUid: task.taskUid,
+});
   // Optional: you could wait for completion:
   // await client.waitForTask(task.taskUid);
 
