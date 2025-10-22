@@ -188,14 +188,6 @@ const task = await index.addDocuments(unique);
 // Optionally wait until it's done:
 // await client.waitForTask(task.taskUid);
 
-return NextResponse.json({
-  ok: true,
-  added: unique.length,
-  taskUid: task.taskUid,
-});
-  // Optional: you could wait for completion:
-  // await client.waitForTask(task.taskUid);
-
   return NextResponse.json({
     ok: true,
     sources: FEEDS.length,
