@@ -181,7 +181,10 @@ export async function GET(req: Request) {
   });
 
   // Index
-  const task = await index.addDocuments(unique);
+  import { Index } from "meilisearch";
+
+const index = client.index('bodybuilding') as Index<any>;
+const task = await index.addDocuments(unique);
   // Optional: you could wait for completion:
   // await client.waitForTask(task.taskUid);
 
