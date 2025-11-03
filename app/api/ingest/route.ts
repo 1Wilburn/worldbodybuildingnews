@@ -21,22 +21,22 @@ const MAX_PER_FEED = 40; // safety cap per source per run
 //     * Use "reddit:r/<subname>" (converted to https://www.reddit.com/r/<sub>/.rss)
 //
 // IMPORTANT: Do not remove your existing feeds; I’ve appended/additionally included.
-const FEEDS: string[] = [
-  /* — Major Bodybuilding News Outlets — */
+const FEEDS = [
+  // — Major Bodybuilding News Outlets —
   "https://generationiron.com/feed/",
   "https://barbend.com/feed/",
   "https://www.muscleandfitness.com/feed/",
   "https://www.bodybuilding.com/rss/articles.xml",
-  "reddit:r/bodybuilding",
+  "https://www.reddit.com/r/bodybuilding/.rss",
 
-  /* — IFBB / NPC / Olympia — */
+  // — IFBB / NPC / Olympia —
   "https://npcnewsonline.com/feed/",
   "https://mrolympia.com/rss.xml",
   "https://ifbbpro.com/feed/",
   "https://ifbbmuscle.com/feed/",
   "https://www.rxmuscle.com/component/k2?format=feed",
 
-  /* — Fitness & Training — */
+  // — Fitness & Training —
   "https://breakingmuscle.com/feed/",
   "https://www.t-nation.com/feed/",
   "https://www.strengthlog.com/feed/",
@@ -44,42 +44,18 @@ const FEEDS: string[] = [
   "https://www.womenshealthmag.com/fitness/rss/",
   "https://athleanx.com/feed",
 
-  /* — Nutrition, Science & Recovery — */
+  // — Nutrition, Science & Recovery —
   "https://examine.com/feed/",
   "https://supplementclarity.com/feed/",
   "https://www.healthline.com/rss",
   "https://www.precisionnutrition.com/feed",
 
-  /* — YouTube channels you already had by ID — */
-  "yt:UC1n6m34V0tmC8YpWQK0YvBw", // Nick Strength & Power
-  "yt:UCwR8tn9qxO0bH1lBFzYfcwA", // More Plates More Dates
-  "yt:UC2O3WUlARlJ97H2p8S3e8Jw", // Fouad Abiad
-  "yt:UCs2y1cJGOxN0Hf1hY8jA23Q", // Bodybuilding.com
-  "yt:UCRB8C7v4VfJd_LGZr4IFk6A", // Jay Cutler TV
-
-  /* — YouTube via @handles (auto-resolve) — */
-  "yt:@musclediscord",
-  "yt:@voiceofbodybuilding",
-
-  // Extra high-engagement fitness/bodybuilding creators (handles; we’ll resolve):
-  "yt:@jeffnippard",
-  "yt:@athleanx",             // site feed already included; this is their YT
-  "yt:@GregDoucetteIFBBPro",
-  "yt:@powerprojectlive",     // Mark Bell (Power Project)
-  "yt:@RenaissancePeriodization",
-  "yt:@EliteFTS",
-  "yt:@OmarIsuf",
-  "yt:@ryanhumiston",
-  "yt:@alanthrall",
-  "yt:@BrandonCurry",
-  "yt:@SethFeroce",
-  "yt:@BroScienceLife",
-  "yt:@KneelBeforeZodTraining", // example extra fitness
-  "yt:@GarageStrength",
-  "yt:@ATHLEANXwomen",
-  "yt:@SquatUniversity",
-  "yt:@JeffCavaliereATHLEANXClips",
-  "yt:@JP_Coaching" // placeholder extra; safe to keep—will just be skipped if not found
+  // — YouTube Channels —
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UC1n6m34V0tmC8YpWQK0YvBw", // Nick Strength & Power
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCwR8tn9qxO0bH1lBFzYfcwA", // More Plates More Dates
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UC2O3WUlARlJ97H2p8S3e8Jw", // Fouad Abiad
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCs2y1cJGOxN0Hf1hY8jA23Q", // Bodybuilding.com
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCRB8C7v4VfJd_LGZr4IFk6A" // Jay Cutler TV (no trailing comma)
 ];
 
 /* ----------------------- 2) MEILISEARCH CLIENT ----------------------- */
