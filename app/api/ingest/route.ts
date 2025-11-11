@@ -1,57 +1,43 @@
+// app/api/ingest/route.ts
 import { NextResponse } from "next/server";
 import { MeiliSearch, type Index } from "meilisearch";
 import crypto from "node:crypto";
 
-/* ----------------------- 1) CONFIG ----------------------- */
-
 const INDEX_NAME = "bodybuilding";
 const MAX_PER_FEED = 40;
 
-const FEEDS: string[] = [
-  // — Major Bodybuilding News Outlets —
+const FEEDS = [
   "https://generationiron.com/feed/",
   "https://barbend.com/feed/",
   "https://www.muscleandfitness.com/feed/",
   "https://www.bodybuilding.com/rss/articles.xml",
   "https://www.reddit.com/r/bodybuilding/.rss",
-
-  // — IFBB / NPC / Olympia —
   "https://npcnewsonline.com/feed/",
   "https://mrolympia.com/rss.xml",
   "https://ifbbpro.com/feed/",
   "https://ifbbmuscle.com/feed/",
   "https://www.rxmuscle.com/component/k2?format=feed",
-
-  // — Fitness & Training —
   "https://breakingmuscle.com/feed/",
   "https://www.t-nation.com/feed/",
   "https://www.strengthlog.com/feed/",
   "https://www.menshealth.com/fitness/rss/",
   "https://www.womenshealthmag.com/fitness/rss/",
   "https://athleanx.com/feed",
-
-  // — Nutrition, Science & Recovery —
   "https://examine.com/feed/",
   "https://supplementclarity.com/feed/",
   "https://www.healthline.com/rss",
   "https://www.precisionnutrition.com/feed",
-
-  // — YouTube Channels —
-  "https://www.youtube.com/feeds/videos.xml?channel_id=UC1n6m34V0tmC8YpWQK0YvBw", // Nick Strength & Power
-  "https://www.youtube.com/feeds/videos.xml?channel_id=UCwR8tn9qxO0bH1lBFzYfcwA", // More Plates More Dates
-  "https://www.youtube.com/feeds/videos.xml?channel_id=UC2O3WUlARlJ97H2p8S3e8Jw", // Fouad Abiad
-  "https://www.youtube.com/feeds/videos.xml?channel_id=UCs2y1cJGOxN0Hf1hY8jA23Q", // Bodybuilding.com
-  "https://www.youtube.com/feeds/videos.xml?channel_id=UCRB8C7v4VfJd_LGZr4IFk6A"  // Jay Cutler TV
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UC1n6m34V0tmC8YpWQK0YvBw",
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCwR8tn9qxO0bH1lBFzYfcwA",
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UC2O3WUlARlJ97H2p8S3e8Jw",
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCs2y1cJGOxN0Hf1hY8jA23Q",
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCRB8C7v4VfJd_LGZr4IFk6A"
 ];
-
-/* ----------------------- 2) MEILISEARCH CLIENT ----------------------- */
 
 const client = new MeiliSearch({
   host: process.env.MEILI_HOST || "",
   apiKey: process.env.MEILI_API_KEY || process.env.MEILI_PUBLIC_KEY || "",
 });
-
-/* ----------------------- 3) RSS PARSER HELPERS ----------------------- */
 
 type Doc = {
   id: string;
@@ -82,15 +68,8 @@ function parseRSS(xml: string, source: string): Doc[] {
       const desc = textBetween(raw, "description") || textBetween(raw, "content:encoded");
       const pub = strip(textBetween(raw, "pubDate"));
       const url = link || "";
-      return {
-        id: hashId(url || title),
-        title: title || url || "(untitled)",
-        url,
-        source,
-        publishedAt: pub || undefined,
-        summary: strip(desc || ""),
-      };
-    }).filter((d) => d.url);
+      return { id: hashId(url || title), title: title || url || "(untitled)", url, source, publishedAt: pub || undefined, summary: strip(desc || "") };
+    }).filter(d => d.url);
   }
 
   items = xml.match(/<entry[\s\S]*?<\/entry>/gi) || [];
@@ -101,15 +80,8 @@ function parseRSS(xml: string, source: string): Doc[] {
       const url = linkTag ? linkTag[1] : strip(textBetween(raw, "id"));
       const summ = textBetween(raw, "summary") || textBetween(raw, "content");
       const pub = strip(textBetween(raw, "updated")) || strip(textBetween(raw, "published"));
-      return {
-        id: hashId(url || title),
-        title: title || url || "(untitled)",
-        url,
-        source,
-        publishedAt: pub || undefined,
-        summary: strip(summ || ""),
-      };
-    }).filter((d) => d.url);
+      return { id: hashId(url || title), title: title || url || "(untitled)", url, source, publishedAt: pub || undefined, summary: strip(summ || "") };
+    }).filter(d => d.url);
   }
 
   return [];
@@ -122,51 +94,27 @@ async function fetchFeed(url: string): Promise<Doc[]> {
   return parseRSS(xml, new URL(url).hostname);
 }
 
-/* ----------------------- 4) ROUTE: /api/ingest ----------------------- */
-
 export async function GET(req: Request) {
-  if (!process.env.MEILI_HOST)
-    return NextResponse.json({ error: "MEILI_HOST missing in env" }, { status: 500 });
-  if (!process.env.MEILI_API_KEY && !process.env.MEILI_PUBLIC_KEY)
-    return NextResponse.json({ error: "MEILI_API_KEY or MEILI_PUBLIC_KEY missing in env" }, { status: 500 });
-
   const token = new URL(req.url).searchParams.get("token");
-  if (!token || token !== process.env.INGEST_SECRET)
+  if (token !== process.env.INGEST_SECRET)
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
   let index: Index<any>;
-  try {
-    index = await client.getIndex(INDEX_NAME);
-  } catch {
-    index = await client.createIndex(INDEX_NAME, { primaryKey: "id" });
-  }
+  try { index = await client.getIndex(INDEX_NAME); }
+  catch { index = await client.createIndex(INDEX_NAME, { primaryKey: "id" }); }
 
   const batches: string[][] = [];
   for (let i = 0; i < FEEDS.length; i += 5) batches.push(FEEDS.slice(i, i + 5));
 
   let allDocs: Doc[] = [];
-  let fetched = 0;
-
   for (const batch of batches) {
     const results = await Promise.allSettled(batch.map((u) => fetchFeed(u)));
-    for (const r of results) {
-      if (r.status === "fulfilled") {
-        fetched += r.value.length;
-        allDocs = allDocs.concat(r.value);
-      }
-    }
+    for (const r of results) if (r.status === "fulfilled") allDocs = allDocs.concat(r.value);
   }
 
   const seen = new Set<string>();
   const unique = allDocs.filter((d) => !seen.has(d.id) && seen.add(d.id));
-
   const task = await index.addDocuments(unique);
 
-  return NextResponse.json({
-    ok: true,
-    sources: FEEDS.length,
-    fetched,
-    indexed: unique.length,
-    taskUid: (task as any).taskUid ?? (task as any).uid,
-  });
+  return NextResponse.json({ ok: true, indexed: unique.length, taskUid: (task as any).taskUid ?? (task as any).uid });
 }
