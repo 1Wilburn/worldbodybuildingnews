@@ -7,18 +7,21 @@ const INDEX_NAME = "bodybuilding";
 const MAX_PER_FEED = 40;
 
 const FEEDS = [
+  // — Major Bodybuilding News Outlets —
   "https://generationiron.com/feed/",
   "https://barbend.com/feed/",
   "https://www.muscleandfitness.com/feed/",
   "https://www.bodybuilding.com/rss/articles.xml",
   "https://www.reddit.com/r/bodybuilding/.rss",
 
+  // — IFBB / NPC / Olympia —
   "https://npcnewsonline.com/feed/",
   "https://mrolympia.com/rss.xml",
   "https://ifbbpro.com/feed/",
   "https://ifbbmuscle.com/feed/",
   "https://www.rxmuscle.com/component/k2?format=feed",
 
+  // — Fitness & Training —
   "https://breakingmuscle.com/feed/",
   "https://www.t-nation.com/feed/",
   "https://www.strengthlog.com/feed/",
@@ -26,17 +29,18 @@ const FEEDS = [
   "https://www.womenshealthmag.com/fitness/rss/",
   "https://athleanx.com/feed",
 
+  // — Nutrition, Science & Recovery —
   "https://examine.com/feed/",
   "https://supplementclarity.com/feed/",
   "https://www.healthline.com/rss",
   "https://www.precisionnutrition.com/feed",
 
-  // YouTube RSS feeds
+  // — YouTube Channels —
   "https://www.youtube.com/feeds/videos.xml?channel_id=UC1n6m34V0tmC8YpWQK0YvBw", // Nick Strength & Power
   "https://www.youtube.com/feeds/videos.xml?channel_id=UCwR8tn9qxO0bH1lBFzYfcwA", // More Plates More Dates
   "https://www.youtube.com/feeds/videos.xml?channel_id=UC2O3WUlARlJ97H2p8S3e8Jw", // Fouad Abiad
   "https://www.youtube.com/feeds/videos.xml?channel_id=UCs2y1cJGOxN0Hf1hY8jA23Q", // Bodybuilding.com
-  "https://www.youtube.com/feeds/videos.xml?channel_id=UCRB8C7v4VfJd_LGZr4IFk6A"  // Jay Cutler TV
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCRB8C7v4VfJd_LGZr4IFk6A" // Jay Cutler TV
 ];
 
 /* ----------------------- CLIENT ----------------------- */
@@ -69,9 +73,10 @@ type Doc = {
   summary?: string;
 };
 
-/* ----------------------- PARSE RSS ----------------------- */
+/* ----------------------- PARSER ----------------------- */
 function parseRSS(xml: string, source: string): Doc[] {
   let items = xml.match(/<item[\s\S]*?<\/item>/gi) || [];
+
   if (items.length) {
     return items
       .slice(0, MAX_PER_FEED)
@@ -103,7 +108,7 @@ function parseRSS(xml: string, source: string): Doc[] {
   return [];
 }
 
-/* ----------------------- FETCH FEEDS ----------------------- */
+/* ----------------------- FETCHER ----------------------- */
 async function fetchFeed(url: string): Promise<Doc[]> {
   const res = await fetch(url, { headers: { "user-agent": "WBN-Ingest/1.0" }, cache: "no-store" });
   if (!res.ok) throw new Error(`Fetch failed ${res.status} ${url}`);
@@ -118,14 +123,15 @@ export async function GET(req: Request) {
   if (new URL(req.url).searchParams.get("token") !== process.env.INGEST_SECRET)
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  // Ensure index exists (fixes previous errors)
-  await client.createIndex(INDEX_NAME, { primaryKey: "id" }).catch(() => {});
-  const index = client.index(INDEX_NAME);
+  let index: Index<any>;
+  try {
+    index = await client.getIndex(INDEX_NAME);
+  } catch {
+    index = await client.createIndex(INDEX_NAME, { primaryKey: "id" }) as Index<any>;
+  }
 
   const results = await Promise.allSettled(FEEDS.map(fetchFeed));
-  const docs = results
-    .filter(r => r.status === "fulfilled")
-    .flatMap(r => (r as any).value);
+  const docs = results.filter(r => r.status === "fulfilled").flatMap(r => (r as any).value);
 
   const seen = new Set<string>();
   const unique = docs.filter(d => !seen.has(d.id) && seen.add(d.id));
