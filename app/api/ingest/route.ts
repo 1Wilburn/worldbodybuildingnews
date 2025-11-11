@@ -7,21 +7,18 @@ const INDEX_NAME = "bodybuilding";
 const MAX_PER_FEED = 40;
 
 const FEEDS = [
-  // — Major Bodybuilding News Outlets —
   "https://generationiron.com/feed/",
   "https://barbend.com/feed/",
   "https://www.muscleandfitness.com/feed/",
   "https://www.bodybuilding.com/rss/articles.xml",
   "https://www.reddit.com/r/bodybuilding/.rss",
 
-  // — IFBB / NPC / Olympia —
   "https://npcnewsonline.com/feed/",
   "https://mrolympia.com/rss.xml",
   "https://ifbbpro.com/feed/",
   "https://ifbbmuscle.com/feed/",
   "https://www.rxmuscle.com/component/k2?format=feed",
 
-  // — Fitness & Training —
   "https://breakingmuscle.com/feed/",
   "https://www.t-nation.com/feed/",
   "https://www.strengthlog.com/feed/",
@@ -29,18 +26,17 @@ const FEEDS = [
   "https://www.womenshealthmag.com/fitness/rss/",
   "https://athleanx.com/feed",
 
-  // — Nutrition, Science & Recovery —
   "https://examine.com/feed/",
   "https://supplementclarity.com/feed/",
   "https://www.healthline.com/rss",
   "https://www.precisionnutrition.com/feed",
 
-  // — YouTube Channels —
-  "https://www.youtube.com/feeds/videos.xml?channel_id=UC1n6m34V0tmC8YpWQK0YvBw",
-  "https://www.youtube.com/feeds/videos.xml?channel_id=UCwR8tn9qxO0bH1lBFzYfcwA",
-  "https://www.youtube.com/feeds/videos.xml?channel_id=UC2O3WUlARlJ97H2p8S3e8Jw",
-  "https://www.youtube.com/feeds/videos.xml?channel_id=UCs2y1cJGOxN0Hf1hY8jA23Q",
-  "https://www.youtube.com/feeds/videos.xml?channel_id=UCRB8C7v4VfJd_LGZr4IFk6A",
+  // YouTube Feeds
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UC1n6m34V0tmC8YpWQK0YvBw", // Nick Strength & Power
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCwR8tn9qxO0bH1lBFzYfcwA", // MPMD
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UC2O3WUlARlJ97H2p8S3e8Jw", // Fouad Abiad
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCs2y1cJGOxN0Hf1hY8jA23Q", // Bodybuilding.com
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCRB8C7v4VfJd_LGZr4IFk6A" // Jay Cutler TV
 ];
 
 /* ----------------------- CLIENT ----------------------- */
@@ -61,7 +57,7 @@ function hashId(input: string) {
   return crypto.createHash("sha1").update(input).digest("hex");
 }
 
-/* ----------------------- TYPES ----------------------- */
+/* ----------------------- RSS PARSER ----------------------- */
 type Doc = {
   id: string;
   title: string;
@@ -71,10 +67,8 @@ type Doc = {
   summary?: string;
 };
 
-/* ----------------------- PARSER ----------------------- */
 function parseRSS(xml: string, source: string): Doc[] {
   let items = xml.match(/<item[\s\S]*?<\/item>/gi) || [];
-
   if (items.length) {
     return items.slice(0, MAX_PER_FEED).map(raw => {
       const title = strip(textBetween(raw, "title"));
@@ -96,18 +90,16 @@ function parseRSS(xml: string, source: string): Doc[] {
       return { id: hashId(url || title), title, url, source, publishedAt: pub, summary: strip(summ || "") };
     }).filter(d => d.url);
   }
-
   return [];
 }
 
-/* ----------------------- FETCHER ----------------------- */
+/* ----------------------- FETCH + INDEX ----------------------- */
 async function fetchFeed(url: string): Promise<Doc[]> {
   const res = await fetch(url, { headers: { "user-agent": "WBN-Ingest/1.0" }, cache: "no-store" });
   if (!res.ok) throw new Error(`Fetch failed ${res.status} ${url}`);
   return parseRSS(await res.text(), new URL(url).hostname);
 }
 
-/* ----------------------- ROUTE ----------------------- */
 export async function GET(req: Request) {
   if (!process.env.INGEST_SECRET)
     return NextResponse.json({ error: "INGEST_SECRET missing" }, { status: 500 });
