@@ -82,17 +82,53 @@ const FEEDS: string[] = [
   "https://www.youtube.com/feeds/videos.xml?channel_id=UCYWdz9dZYkTfGZNVVRhkE0Q", // Hunter Labrada
   "https://www.youtube.com/feeds/videos.xml?channel_id=UCSzUxI4VqWj5gI29s-8Zv-g", // Flex Lewis
   "https://www.youtube.com/feeds/videos.xml?channel_id=UC-fR6qQ0mVqS4YPjR6B_0dg", // Kai Greene
-
-  /* New channels */
   "https://www.youtube.com/feeds/videos.xml?channel_id=UCQL-1aQ3e8Qor2yZzS5HcyQ", // Nick Walker
   "https://www.youtube.com/feeds/videos.xml?channel_id=UCdK0yQ8r4ps2Q9VHtV6nQZA", // Regan Grimes
   "https://www.youtube.com/feeds/videos.xml?channel_id=UCcJtTghV_csFJpQk6WvVlyg", // Big Ramy
   "https://www.youtube.com/feeds/videos.xml?channel_id=UCi7iZYxzQxYv3grnHVY0bNQ", // Bodybuilding University
   "https://www.youtube.com/feeds/videos.xml?channel_id=UCsi4f95q-wK0Hn3o9gBWTKg", // Old School Labs
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UC-2JUs_G21BrJ0EFqFFLrFQ", // Larry Wheels
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UC8tTGHpgK5YV9g5z0q7Z0bw", // Noel Deyzel
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCqkxvB4vOB6x97_GMPQwzJw", // Ben Pakulski
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCk7XH-Sdd90b4p9vWlC8bZw", // Antoine Vaillant
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCJmr4O7zUFLx4lIZdKT7qag", // Shawn Ray
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCLZ0FODa0kC4qO7I5LbhZ3w", // Seth Feroce
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCc0Y3i8S3Pq83ezBz7GSeGQ", // Blessing Awodibu
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCdh3GK6W7wopgB8o6EqYTJw", // Akim Williams
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCi_1eG9ZjZC1HQD0t8JvjQA", // Patrick Moore
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCy1P5LjWwzOZcRHdSPVUbFQ", // Bishop Sycamore Shawn Rhoden Legacy
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UC_xnFIcErX7qwCqvaHP3Wyg", // Brandon Curry
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UC5Yzv0wL2pEPc9DXU-FN74A", // Big Boy (Strength Cartel)
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCe7YZC4QG8WJswE0YvFf7Wg", // Coach Greg Doucette
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCxNeUwuud7sustA35dxmOkg", // Beyond the Stage TV (you wanted)
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCW0y3z4dH2Q4GMW4j-WlS1Q", // MattDoesFitness (big fitness)
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCJXhxrVPJcQpGdjK70M9Jxg", // Alex Eubank (fitness influence)
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UC2zX7f7P6B4ezgm5S4tbk-A", // Michael Daboul
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UC2LVNpjYrXEKQqxh0aOR_1A", // Terrence Ruffin
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCWCA9s_0L5WzJwgVdsH9zSw", // Hassan Mostafa
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCP7ru6JEjJdfL7ZqTEfFwbw", // Nathan De Asha
 
   /* ──────────────────────────── News ──────────────────────────── */
-  "https://www.youtube.com/feeds/videos.xml?channel_id=UC7XQkZZgwyUr_FvbzUKGwIQ", // MuscleDiscord (correct ID)
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UC97k3hlbE-1rVN8y56zyEEA", // Bodybuilding.com Podcast
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UC68TLK0mAEzUyHx5k-SmMZw", // Jeff Nippard
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCQL-1aQ3e8Qor2yZzS5HcyQ", // Nick Walker
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCdK0yQ8r4ps2Q9VHtV6nQZA", // Regan Grimes
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCi7iZYxzQxYv3grnHVY0bNQ", // Bodybuilding University
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCf0I2aWlY8qlLAm5XB9mV0Q", // Milos Sarcev
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCxNeUwuud7sustA35dxmOkg", // Muscle Discord
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCxFjK5JGgX7h1C9m1nFJnHw", // Desktop Bodybuilding
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCLqH-U2TXzj1h7lyYQZLNQQ", // Greg Doucette
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCg_tz2iw7p8-SmMZw", // Kali Muscle
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCMj0iPlfMyag2UEG0XDuHOA", // Scott Herman Fitness
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UChXRi2xTPa8-SmMZw", // Rohit Khatri Fitness
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCKpYY0xYeGNN-uOHmQIE7Pg", // Furious Pete
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCsi4f95q-wK0Hn3o9gBWTKg", // Bodybuilding Lifestyle Channel
   "https://www.youtube.com/feeds/videos.xml?channel_id=UCxNeUwuud7sustA35dxmOkg", // Beyond The Stage TV
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCZWvZK0oHIYxXOMqvV5hNKA", // Additional Verified Channel
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCL_-YcVNmU46ZfDjYPkhQw" // Additional Verified Channel
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UC7XQkZZgwyUr_FvbzUKGwIQ", // MuscleDiscord
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCxNeUwuud7sustA35dxmOkg", // Beyond The Stage TV
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCxNeUwuud7sustA35dxmOkg", // Voice Of Bodybuilding 
   
   /* ──────────────────────────── INSTAGRAM via RSSHub ──────────────────────────── */
   "https://rsshub.app/instagram/user/samson_dauda",
@@ -102,19 +138,48 @@ const FEEDS: string[] = [
   "https://rsshub.app/instagram/user/big_ramy",
   "https://rsshub.app/instagram/user/andrewjacked",
   "https://rsshub.app/instagram/user/william_bonac",
-
-  /* NEW IG */
   "https://rsshub.app/instagram/user/nick_walker39",
   "https://rsshub.app/instagram/user/regangrimes",
   "https://rsshub.app/instagram/user/jojodadbully",
-
+  "https://rsshub.app/instagram/user/ramondino_pro",
+  "https://rsshub.app/instagram/user/keone_prodigy",
+  "https://rsshub.app/instagram/user/charlesgriffin_ifbbpro",
+  "https://rsshub.app/instagram/user/justinrodriguezpro",
+  "https://rsshub.app/instagram/user/akim_williams_ifbb",
+  "https://rsshub.app/instagram/user/joey_swole",
+  "https://rsshub.app/instagram/user/brett_wilkin",
+  "https://rsshub.app/instagram/user/clarett_ifbbpro",
+  "https://rsshub.app/instagram/user/martynfordofficial",
+  "https://rsshub.app/instagram/user/michy_ifbbpro",
+  "https://rsshub.app/instagram/user/jaycolorado_ifbbpro",
+  "https://rsshub.app/instagram/user/jon_delarosa",
+  "https://rsshub.app/instagram/user/benpak",
+  "https://rsshub.app/instagram/user/sadikhadzovic",
+  "https://rsshub.app/instagram/user/antigramaglia_ifbbpro",
+  "https://rsshub.app/instagram/user/roellywinklaar",
+  "https://rsshub.app/instagram/user/shawn_rhoden",  // Legacy account
+  "https://rsshub.app/instagram/user/jacksonpeck_ifbb",
+  "https://rsshub.app/instagram/user/patrickmoore_ifbbpro",
+  "https://rsshub.app/instagram/user/joeyswoll",
+  "https://rsshub.app/instagram/user/joelinibro_ifbb",
+  "https://rsshub.app/instagram/user/valentinpetrovpro",
+  "https://rsshub.app/instagram/user/martynfordofficial"
+  
   /* ──────────────────────────── TIKTOK via RSSHub ──────────────────────────── */
   "https://rsshub.app/tiktok/user/@samsondauda",
   "https://rsshub.app/tiktok/user/@officialcbum",
   "https://rsshub.app/tiktok/user/@andrejdeiu",
   "https://rsshub.app/tiktok/user/@big_ramy",
-
-  /* NEW TikTok */
+  "https://rsshub.app/tiktok/user/@ramondino_pro",
+  "https://rsshub.app/tiktok/user/@keoneprodigy",
+  "https://rsshub.app/tiktok/user/@charlesgriffinifbb",
+  "https://rsshub.app/tiktok/user/@brett_wilkin",
+  "https://rsshub.app/tiktok/user/@joeyswole",
+  "https://rsshub.app/tiktok/user/@michy_ifbbpro",
+  "https://rsshub.app/tiktok/user/@patrickmooreifbb",
+  "https://rsshub.app/tiktok/user/@roellywinklaar",
+  "https://rsshub.app/tiktok/user/@martynfordofficial",
+  "https://rsshub.app/tiktok/user/@sadikhadzovic"
   "https://rsshub.app/tiktok/user/@nick_walker39",
   "https://rsshub.app/tiktok/user/@regangrimes",
 
