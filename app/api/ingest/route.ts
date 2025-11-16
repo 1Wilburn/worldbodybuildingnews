@@ -7,37 +7,7 @@ const INDEX_NAME = "bodybuilding";
 const MAX_PER_FEED = 40;
 
 const FEEDS = [
- /* ──────────────────────────── NEW BODYBUILDING NEWS & MEDIA SOURCES ──────────────────────────── */
-  "https://www.stack3d.com/feed", // Supplement news, bodybuilding industry
-  "https://www.lift.net/feed/", // Powerlifting + strength sports news
-  "https://www.elitefts.com/rss/all", // EliteFTS training articles & news
-  "https://www.totalbodybuilding.com/feed/", // BB articles & guides
-  "https://www.bodybuildingmealplan.com/feed/", // Nutrition + bodybuilding
-  "https://www.homegymbodybuilding.com/feed/", // Equipment + bodybuilding
-  "https://www.bestworkoutsupplementsblog.com/feed/", // Supplement + bodybuilding news
-  "https://www.kingofthegym.com/feed/", // Training + hypertrophy articles
-  "https://outlift.com/feed/", // Hypertrophy-focused science articles
-  "https://www.jackednatural.com/feed/", // Natural bodybuilding training articles
-  "https://www.tigerworkout.com/feed/", // BB workouts + training breakdowns
-  "https://muscularstrength.com/rss", // Fitness & bodybuilding social platform
 
-  /* International Bodybuilding Media */
-  "https://www.flexonline.com/feed", // IFBB Flex Online (some articles still publish)
-  "https://www.body-xtreme.de/feed/", // German bodybuilding news
-  "https://www.figmoclub.com/feed/", // European bodybuilding coverage
-  "https://www.geneticphysique.com/feed/", // Competition prep & natural BB
-  "https://www.myfitmagazine.com/feed/", // Training, fitness, bodybuilding news
-  "https://www.heromuscle.com/feed/", // Bodybuilding articles + news
-  "https://www.bodybuildingestore.com/feed/", // Hypertrophy + supplement articles
-  "https://fitnessexpost.com/feed/", // Science-backed BB content
-  "https://gymfluencers.com/feed/", // Influencer bodybuilding & fitness news
-
-  /* Hardcore Science / Strength Community Feeds */
-  "https://www.strongscience.co/feed/", // Physiology & hypertrophy studies
-  "https://examine.substack.com/feed", // Supplement & nutrition meta-analyses
-  "https://ironmagazine.com/feed/", // Old-school bodybuilding news site
-  "https://www.hardgainer.com/feed/", // Hardgainer / hypertrophy niche
-  
   /* ──────────────────────────── BODYBUILDING NEWS & MEDIA ──────────────────────────── */
   "https://generationiron.com/feed/",
   "https://barbend.com/feed/",
@@ -61,8 +31,23 @@ const FEEDS = [
   "https://www.criticalbench.com/feed/",
   "https://www.tigerfitness.com/blogs/news.atom",
 
-  /* ──────────────────────────── FITNESS & TRAINING SITES ──────────────────────────── */
+  /* NEW Step-2 bodybuilding news / media */
+  "https://www.elitefts.com/rss/",
+  "https://www.stack.com/feed/",
+  "https://www.marksdailyapple.com/feed/",
   "https://breakingmuscle.com/feed/",
+  "https://www.strengthsensei.com/feed/",
+  "https://www.jtsstrength.com/feed/",
+  "https://www.elitefitness.com/feed/",
+  "https://www.anabolicbible.com/feed/",
+  "https://www.bodybuildinguniverse.com/feed/",
+  "https://www.biotest.t-nation.com/articles.rss",
+  "https://www.tigerfitness.com/blogs/news.atom",
+  "https://www.nasm.org/blog/rss.xml",
+  "https://www.acefitness.org/resources/everyone/blog/rss/",
+  "https://www.hardbodynews.com/feed/",
+
+  /* ──────────────────────────── FITNESS & TRAINING SITES ──────────────────────────── */
   "https://www.t-nation.com/feed/",
   "https://www.strengthlog.com/feed/",
   "https://www.menshealth.com/fitness/rss/",
@@ -73,6 +58,14 @@ const FEEDS = [
   "https://www.strongfirst.com/feed/",
   "https://www.powerlifting.sport/feed/",
 
+  /* EXTRA training sites */
+  "https://www.westside-barbell.com/blogs/news.atom",
+  "https://www.bodyrecomposition.com/feed",
+  "https://www.lift.net/feed/",
+  "https://www.roguefitness.com/the-index/rss",
+  "https://squatuniversity.com/feed/",
+  "https://www.strengthsystem.com/blog?format=rss",
+
   /* ──────────────────────────── NUTRITION, SUPPLEMENTS, HEALTH ──────────────────────────── */
   "https://examine.com/feed/",
   "https://supplementclarity.com/feed/",
@@ -82,12 +75,17 @@ const FEEDS = [
   "https://legionathletics.com/blog/feed/",
   "https://renaissanceperiodization.com/feed",
 
+  /* More nutrition */
+  "https://www.laynemorton.com/feed/",
+  "https://www.marekhealth.com/blog?format=rss",
+  "https://www.suppversity.blogspot.com/feeds/posts/default",
+
   /* ──────────────────────────── YOUTUBE BODYBUILDING CHANNELS ──────────────────────────── */
   "https://www.youtube.com/feeds/videos.xml?channel_id=UC1n6m34V0tmC8YpWQK0YvBw", // Nick Strength & Power
-  "https://www.youtube.com/feeds/videos.xml?channel_id=UCwR8tn9qxO0bH1lBFzYfcwA", // More Plates More Dates
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCwR8tn9qxO0bH1lBFzYfcwA", // MPMD
   "https://www.youtube.com/feeds/videos.xml?channel_id=UC2O3WUlARlJ97H2p8S3e8Jw", // Fouad Abiad
   "https://www.youtube.com/feeds/videos.xml?channel_id=UCs2y1cJGOxN0Hf1hY8jA23Q", // Bodybuilding.com
-  "https://www.youtube.com/feeds/videos.xml?channel_id=UCRB8C7v4VfJd_LGZr4IFk6A", // Jay Cutler TV
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCRB8C7v4VfJd_LGZr4IFk6A", // Jay Cutler
   "https://www.youtube.com/feeds/videos.xml?channel_id=UCLqH_eAE8XV9cKkZDxm0M1g", // Samson Dauda
   "https://www.youtube.com/feeds/videos.xml?channel_id=UCf0I2aWlY8qlLAm5XB9mV0Q", // Milos Sarcev
   "https://www.youtube.com/feeds/videos.xml?channel_id=UCp6vF7tHVq2OA4RKu0Iomqg", // Chris Bumstead
@@ -97,6 +95,17 @@ const FEEDS = [
   "https://www.youtube.com/feeds/videos.xml?channel_id=UCYWdz9dZYkTfGZNVVRhkE0Q", // Hunter Labrada
   "https://www.youtube.com/feeds/videos.xml?channel_id=UCSzUxI4VqWj5gI29s-8Zv-g", // Flex Lewis
   "https://www.youtube.com/feeds/videos.xml?channel_id=UC-fR6qQ0mVqS4YPjR6B_0dg", // Kai Greene
+
+  /* New YT
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCPCQOK0j3n6UQS_r83gRU8w", // HD Muscle
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCWk9N-7tP1N5PwltpQ97f9g", // Muscle Insider
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCaxaVzvPjwy0qkXwT3JwPaw", // Redcon1
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCSnGZzPlqipaTgkP88oymSw", // Mark Bell
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UC0jzI4-ORqxa7R6J43s8k5w", // Athlean-X secondary
+
+  /* Add later manually if they publish RSS:
+     Musclediscord (YouTube doesn't give RSS for @ links automatically)
+  */
 
   /* ──────────────────────────── INSTAGRAM PROFILES (via RSSHub) ──────────────────────────── */
   "https://rsshub.app/instagram/user/samson_dauda",
@@ -129,7 +138,16 @@ const FEEDS = [
   "https://www.nabba.co.uk/feed/",
   "https://www.naturalbodybuilding.com/feed/",
   "https://www.gbo-online.com/feed/",
-  "https://www.musclemania.com/feed/"
+  "https://www.musclemania.com/feed/",
+
+  /* Extra federations */
+  "https://www.ibff.com/feed/",
+  "https://www.wff-international.com/feed/",
+  "https://www.wbffshows.com/blog?format=rss",
+  "https://www.fitparade.hu/feed/",
+  "https://www.fbbf.jp/feed/",
+  "https://www.sbbf.org.my/feed/",
+
 ];
 
 /* ----------------------- 2) MEILISEARCH CLIENT ----------------------- */
