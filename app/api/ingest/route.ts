@@ -23,8 +23,6 @@ const FEEDS: string[] = [
   "https://www.fbsupplementsreview.com/feed/",
   "https://www.strongerbyscience.com/feed/",
   "https://startingstrength.com/feed/",
-
-  /* New additions */
   "https://www.stack3d.com/feed",
   "https://www.fitnessexpost.com/feed/",
   "https://www.bodybuildingmealplan.com/feed/",
@@ -47,8 +45,6 @@ const FEEDS: string[] = [
   "https://physiqonomics.com/feed/",
   "https://www.strongfirst.com/feed/",
   "https://www.powerlifting.sport/feed/",
-
-  /* Extra fitness sources */
   "https://www.bodyweighttrainingarena.com/feed/",
   "https://www.liftvault.com/feed/",
   "https://www.simplyshredded.com/feed/",
@@ -61,8 +57,6 @@ const FEEDS: string[] = [
   "https://www.nutritionadvance.com/feed/",
   "https://legionathletics.com/blog/feed/",
   "https://renaissanceperiodization.com/feed",
-
-  /* New nutrition sources */
   "https://supplementreviews.com/feed/",
   "https://www.anabolicmen.com/feed/",
   "https://www.healthspanmd.com/feed/",
