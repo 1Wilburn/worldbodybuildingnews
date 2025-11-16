@@ -1,4 +1,5 @@
 {
+  // forced refresh
   "crons": [
     {
       "path": "/api/ingest",
