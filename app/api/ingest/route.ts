@@ -6,7 +6,7 @@ import crypto from "node:crypto";
 const INDEX_NAME = "bodybuilding";
 const MAX_PER_FEED = 40;
 
-const FEEDS = [
+const FEEDS: string[] = [
 
   /* ──────────────────────────── BODYBUILDING NEWS & MEDIA ──────────────────────────── */
   "https://generationiron.com/feed/",
@@ -18,55 +18,42 @@ const FEEDS = [
   "https://fitnessvolt.com/feed/",
   "https://www.ironmanmagazine.com/feed/",
   "https://www.musculardevelopment.com/feed/",
-  "https://npcnewsonline.com/feed/",
-  "https://mrolympia.com/rss.xml",
-  "https://ifbbpro.com/feed/",
-  "https://ifbbmuscle.com/feed/",
+  "https://www.criticalbench.com/feed/",
+  "https://www.tigerfitness.com/blogs/news.atom",
   "https://www.fbsupplementsreview.com/feed/",
   "https://www.strongerbyscience.com/feed/",
   "https://startingstrength.com/feed/",
+
+  /* New additions */
+  "https://www.stack3d.com/feed",
+  "https://www.fitnessexpost.com/feed/",
+  "https://www.bodybuildingmealplan.com/feed/",
+  "https://www.elitefitness.com/articles/feed/",
+  "https://www.bodybuildingreview.net/feed/",
+  "https://www.powerliftingtechnique.com/feed/",
+  "https://girlswhopowerlift.com/feed/",
+
+  /* Reddit */
   "https://www.reddit.com/r/bodybuilding/.rss",
   "https://www.reddit.com/r/naturalbodybuilding/.rss",
   "https://www.reddit.com/r/fitness/.rss",
-  "https://www.criticalbench.com/feed/",
-  "https://www.tigerfitness.com/blogs/news.atom",
 
-  /* NEW Step-2 bodybuilding news / media */
-  "https://www.elitefts.com/rss/",
-  "https://www.stack.com/feed/",
-  "https://www.marksdailyapple.com/feed/",
+  /* ──────────────────────────── FITNESS & TRAINING ──────────────────────────── */
   "https://breakingmuscle.com/feed/",
-  "https://www.strengthsensei.com/feed/",
-  "https://www.jtsstrength.com/feed/",
-  "https://www.elitefitness.com/feed/",
-  "https://www.anabolicbible.com/feed/",
-  "https://www.bodybuildinguniverse.com/feed/",
-  "https://www.biotest.t-nation.com/articles.rss",
-  "https://www.tigerfitness.com/blogs/news.atom",
-  "https://www.nasm.org/blog/rss.xml",
-  "https://www.acefitness.org/resources/everyone/blog/rss/",
-  "https://www.hardbodynews.com/feed/",
-
-  /* ──────────────────────────── FITNESS & TRAINING SITES ──────────────────────────── */
   "https://www.t-nation.com/feed/",
   "https://www.strengthlog.com/feed/",
-  "https://www.menshealth.com/fitness/rss/",
-  "https://www.womenshealthmag.com/fitness/rss/",
   "https://athleanx.com/feed",
   "https://jocthetrainer.com/feed/",
   "https://physiqonomics.com/feed/",
   "https://www.strongfirst.com/feed/",
   "https://www.powerlifting.sport/feed/",
 
-  /* EXTRA training sites */
-  "https://www.westside-barbell.com/blogs/news.atom",
-  "https://www.bodyrecomposition.com/feed",
-  "https://www.lift.net/feed/",
-  "https://www.roguefitness.com/the-index/rss",
-  "https://squatuniversity.com/feed/",
-  "https://www.strengthsystem.com/blog?format=rss",
+  /* Extra fitness sources */
+  "https://www.bodyweighttrainingarena.com/feed/",
+  "https://www.liftvault.com/feed/",
+  "https://www.simplyshredded.com/feed/",
 
-  /* ──────────────────────────── NUTRITION, SUPPLEMENTS, HEALTH ──────────────────────────── */
+  /* ──────────────────────────── NUTRITION, SUPPLEMENTS & HEALTH ──────────────────────────── */
   "https://examine.com/feed/",
   "https://supplementclarity.com/feed/",
   "https://www.healthline.com/rss",
@@ -75,17 +62,17 @@ const FEEDS = [
   "https://legionathletics.com/blog/feed/",
   "https://renaissanceperiodization.com/feed",
 
-  /* More nutrition */
-  "https://www.laynemorton.com/feed/",
-  "https://www.marekhealth.com/blog?format=rss",
-  "https://www.suppversity.blogspot.com/feeds/posts/default",
+  /* New nutrition sources */
+  "https://supplementreviews.com/feed/",
+  "https://www.anabolicmen.com/feed/",
+  "https://www.healthspanmd.com/feed/",
 
   /* ──────────────────────────── YOUTUBE BODYBUILDING CHANNELS ──────────────────────────── */
   "https://www.youtube.com/feeds/videos.xml?channel_id=UC1n6m34V0tmC8YpWQK0YvBw", // Nick Strength & Power
-  "https://www.youtube.com/feeds/videos.xml?channel_id=UCwR8tn9qxO0bH1lBFzYfcwA", // MPMD
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCwR8tn9qxO0bH1lBFzYfcwA", // More Plates More Dates
   "https://www.youtube.com/feeds/videos.xml?channel_id=UC2O3WUlARlJ97H2p8S3e8Jw", // Fouad Abiad
   "https://www.youtube.com/feeds/videos.xml?channel_id=UCs2y1cJGOxN0Hf1hY8jA23Q", // Bodybuilding.com
-  "https://www.youtube.com/feeds/videos.xml?channel_id=UCRB8C7v4VfJd_LGZr4IFk6A", // Jay Cutler
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCRB8C7v4VfJd_LGZr4IFk6A", // Jay Cutler TV
   "https://www.youtube.com/feeds/videos.xml?channel_id=UCLqH_eAE8XV9cKkZDxm0M1g", // Samson Dauda
   "https://www.youtube.com/feeds/videos.xml?channel_id=UCf0I2aWlY8qlLAm5XB9mV0Q", // Milos Sarcev
   "https://www.youtube.com/feeds/videos.xml?channel_id=UCp6vF7tHVq2OA4RKu0Iomqg", // Chris Bumstead
@@ -96,34 +83,41 @@ const FEEDS = [
   "https://www.youtube.com/feeds/videos.xml?channel_id=UCSzUxI4VqWj5gI29s-8Zv-g", // Flex Lewis
   "https://www.youtube.com/feeds/videos.xml?channel_id=UC-fR6qQ0mVqS4YPjR6B_0dg", // Kai Greene
 
-  /* New YT
-  "https://www.youtube.com/feeds/videos.xml?channel_id=UCPCQOK0j3n6UQS_r83gRU8w", // HD Muscle
-  "https://www.youtube.com/feeds/videos.xml?channel_id=UCWk9N-7tP1N5PwltpQ97f9g", // Muscle Insider
-  "https://www.youtube.com/feeds/videos.xml?channel_id=UCaxaVzvPjwy0qkXwT3JwPaw", // Redcon1
-  "https://www.youtube.com/feeds/videos.xml?channel_id=UCSnGZzPlqipaTgkP88oymSw", // Mark Bell
-  "https://www.youtube.com/feeds/videos.xml?channel_id=UC0jzI4-ORqxa7R6J43s8k5w", // Athlean-X secondary
+  /* New channels */
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCQL-1aQ3e8Qor2yZzS5HcyQ", // Nick Walker
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCdK0yQ8r4ps2Q9VHtV6nQZA", // Regan Grimes
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCcJtTghV_csFJpQk6WvVlyg", // Big Ramy
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCi7iZYxzQxYv3grnHVY0bNQ", // Bodybuilding University
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCsi4f95q-wK0Hn3o9gBWTKg", // Old School Labs
 
-  /* Add later manually if they publish RSS:
-     Musclediscord (YouTube doesn't give RSS for @ links automatically)
-  */
+  /* ──────────────────────────── MUSCLE DISCORD ──────────────────────────── */
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UC7XQkZZgwyUr_FvbzUKGwIQ", // MuscleDiscord (correct ID)
 
-  /* ──────────────────────────── INSTAGRAM PROFILES (via RSSHub) ──────────────────────────── */
+  /* ──────────────────────────── INSTAGRAM via RSSHub ──────────────────────────── */
   "https://rsshub.app/instagram/user/samson_dauda",
   "https://rsshub.app/instagram/user/cbum",
-  "https://rsshub.app/instagram/user/brandonlynn",
   "https://rsshub.app/instagram/user/hadi_choopan",
   "https://rsshub.app/instagram/user/urskalecinski",
   "https://rsshub.app/instagram/user/big_ramy",
   "https://rsshub.app/instagram/user/andrewjacked",
   "https://rsshub.app/instagram/user/william_bonac",
 
-  /* ──────────────────────────── TIKTOK (via RSSHub) ──────────────────────────── */
+  /* NEW IG */
+  "https://rsshub.app/instagram/user/nick_walker39",
+  "https://rsshub.app/instagram/user/regangrimes",
+  "https://rsshub.app/instagram/user/jojodadbully",
+
+  /* ──────────────────────────── TIKTOK via RSSHub ──────────────────────────── */
   "https://rsshub.app/tiktok/user/@samsondauda",
   "https://rsshub.app/tiktok/user/@officialcbum",
   "https://rsshub.app/tiktok/user/@andrejdeiu",
   "https://rsshub.app/tiktok/user/@big_ramy",
 
-  /* ──────────────────────────── BODYBUILDING FEDERATIONS ──────────────────────────── */
+  /* NEW TikTok */
+  "https://rsshub.app/tiktok/user/@nick_walker39",
+  "https://rsshub.app/tiktok/user/@regangrimes",
+
+  /* ──────────────────────────── FEDERATIONS ──────────────────────────── */
   "https://ifbb.com/feed/",
   "https://ifbbpro.com/feed/",
   "https://npcnewsonline.com/feed/",
@@ -140,13 +134,10 @@ const FEEDS = [
   "https://www.gbo-online.com/feed/",
   "https://www.musclemania.com/feed/",
 
-  /* Extra federations */
-  "https://www.ibff.com/feed/",
-  "https://www.wff-international.com/feed/",
-  "https://www.wbffshows.com/blog?format=rss",
-  "https://www.fitparade.hu/feed/",
-  "https://www.fbbf.jp/feed/",
-  "https://www.sbbf.org.my/feed/",
+  /* New federations */
+  "https://www.npcworldwide.com/feed/",
+  "https://www.icnworldwide.com/feed/",
+  "https://www.unkbff.com/feed/",
 
 ];
 
