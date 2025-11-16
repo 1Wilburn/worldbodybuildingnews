@@ -7,6 +7,37 @@ const INDEX_NAME = "bodybuilding";
 const MAX_PER_FEED = 40;
 
 const FEEDS = [
+ /* ──────────────────────────── NEW BODYBUILDING NEWS & MEDIA SOURCES ──────────────────────────── */
+  "https://www.stack3d.com/feed", // Supplement news, bodybuilding industry
+  "https://www.lift.net/feed/", // Powerlifting + strength sports news
+  "https://www.elitefts.com/rss/all", // EliteFTS training articles & news
+  "https://www.totalbodybuilding.com/feed/", // BB articles & guides
+  "https://www.bodybuildingmealplan.com/feed/", // Nutrition + bodybuilding
+  "https://www.homegymbodybuilding.com/feed/", // Equipment + bodybuilding
+  "https://www.bestworkoutsupplementsblog.com/feed/", // Supplement + bodybuilding news
+  "https://www.kingofthegym.com/feed/", // Training + hypertrophy articles
+  "https://outlift.com/feed/", // Hypertrophy-focused science articles
+  "https://www.jackednatural.com/feed/", // Natural bodybuilding training articles
+  "https://www.tigerworkout.com/feed/", // BB workouts + training breakdowns
+  "https://muscularstrength.com/rss", // Fitness & bodybuilding social platform
+
+  /* International Bodybuilding Media */
+  "https://www.flexonline.com/feed", // IFBB Flex Online (some articles still publish)
+  "https://www.body-xtreme.de/feed/", // German bodybuilding news
+  "https://www.figmoclub.com/feed/", // European bodybuilding coverage
+  "https://www.geneticphysique.com/feed/", // Competition prep & natural BB
+  "https://www.myfitmagazine.com/feed/", // Training, fitness, bodybuilding news
+  "https://www.heromuscle.com/feed/", // Bodybuilding articles + news
+  "https://www.bodybuildingestore.com/feed/", // Hypertrophy + supplement articles
+  "https://fitnessexpost.com/feed/", // Science-backed BB content
+  "https://gymfluencers.com/feed/", // Influencer bodybuilding & fitness news
+
+  /* Hardcore Science / Strength Community Feeds */
+  "https://www.strongscience.co/feed/", // Physiology & hypertrophy studies
+  "https://examine.substack.com/feed", // Supplement & nutrition meta-analyses
+  "https://ironmagazine.com/feed/", // Old-school bodybuilding news site
+  "https://www.hardgainer.com/feed/", // Hardgainer / hypertrophy niche
+  
   /* ──────────────────────────── BODYBUILDING NEWS & MEDIA ──────────────────────────── */
   "https://generationiron.com/feed/",
   "https://barbend.com/feed/",
