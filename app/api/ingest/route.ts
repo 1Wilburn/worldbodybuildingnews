@@ -90,9 +90,10 @@ const FEEDS: string[] = [
   "https://www.youtube.com/feeds/videos.xml?channel_id=UCi7iZYxzQxYv3grnHVY0bNQ", // Bodybuilding University
   "https://www.youtube.com/feeds/videos.xml?channel_id=UCsi4f95q-wK0Hn3o9gBWTKg", // Old School Labs
 
-  /* ──────────────────────────── MUSCLE DISCORD ──────────────────────────── */
+  /* ──────────────────────────── News ──────────────────────────── */
   "https://www.youtube.com/feeds/videos.xml?channel_id=UC7XQkZZgwyUr_FvbzUKGwIQ", // MuscleDiscord (correct ID)
-
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCxNeUwuud7sustA35dxmOkg", // Beyond The Stage TV
+  
   /* ──────────────────────────── INSTAGRAM via RSSHub ──────────────────────────── */
   "https://rsshub.app/instagram/user/samson_dauda",
   "https://rsshub.app/instagram/user/cbum",
