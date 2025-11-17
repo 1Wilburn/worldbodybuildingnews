@@ -196,7 +196,7 @@ const FEEDS: string[] = [
   "https://www.musclemania.com/feed/",
   "https://www.npcworldwide.com/feed/",
   "https://www.icnworldwide.com/feed/",
-  "https://www.unkbff.com/feed/",
+  "https://www.unkbff.com/feed/"
 ];
 
 /* ----------------------- 2) MEILISEARCH CLIENT ----------------------- */
