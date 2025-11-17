@@ -128,30 +128,30 @@ export default function HomePage() {
     <div
       style={{
         minHeight: "100vh",
-        backgroundColor: "#05060a",
-        color: "#f5f5f5",
+        backgroundColor: "#f4f5f7",
+        color: "#111827",
         fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
       }}
     >
-      {/* -------- Top Nav -------- */}
+      {/* -------- Top Nav / Masthead -------- */}
       <header
         style={{
-          borderBottom: "1px solid rgba(255,255,255,0.08)",
-          background:
-            "linear-gradient(to right, rgba(255,0,60,0.22), rgba(0,0,0,0.8))",
+          borderBottom: "1px solid #e5e7eb",
+          backgroundColor: "#ffffff",
         }}
       >
         <div
           style={{
             maxWidth: "1200px",
             margin: "0 auto",
-            padding: "14px 20px",
+            padding: "14px 16px",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
             gap: "16px",
           }}
         >
+          {/* Logo / Brand */}
           <div
             style={{
               display: "flex",
@@ -163,42 +163,45 @@ export default function HomePage() {
           >
             <span
               style={{
-                fontSize: "24px",
+                fontSize: "22px",
                 fontWeight: 800,
                 letterSpacing: "0.05em",
                 textTransform: "uppercase",
+                color: "#111827",
               }}
             >
               World
             </span>
             <span
               style={{
-                fontSize: "24px",
+                fontSize: "22px",
                 fontWeight: 800,
                 letterSpacing: "0.05em",
                 textTransform: "uppercase",
-                color: "#ff184e",
+                color: "#dc2626",
               }}
             >
               Bodybuilding
             </span>
             <span
               style={{
-                fontSize: "24px",
+                fontSize: "22px",
                 fontWeight: 800,
                 letterSpacing: "0.05em",
                 textTransform: "uppercase",
+                color: "#111827",
               }}
             >
               News
             </span>
           </div>
 
+          {/* Simple top nav */}
           <nav
             style={{
               display: "flex",
-              gap: "14px",
-              fontSize: "14px",
+              gap: "16px",
+              fontSize: "13px",
               textTransform: "uppercase",
               letterSpacing: "0.08em",
             }}
@@ -208,7 +211,7 @@ export default function HomePage() {
               style={{
                 background: "transparent",
                 border: "none",
-                color: "#f5f5f5",
+                color: "#374151",
                 cursor: "pointer",
               }}
             >
@@ -219,7 +222,7 @@ export default function HomePage() {
               style={{
                 background: "transparent",
                 border: "none",
-                color: "#f5f5f5",
+                color: "#374151",
                 cursor: "pointer",
               }}
             >
@@ -228,12 +231,14 @@ export default function HomePage() {
             <button
               onClick={() => {
                 const calendarSection = document.getElementById("shows-calendar");
-                if (calendarSection) calendarSection.scrollIntoView({ behavior: "smooth" });
+                if (calendarSection) {
+                  calendarSection.scrollIntoView({ behavior: "smooth" });
+                }
               }}
               style={{
                 background: "transparent",
                 border: "none",
-                color: "#f5f5f5",
+                color: "#374151",
                 cursor: "pointer",
               }}
             >
@@ -243,527 +248,600 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* -------- Hero + Main Layout -------- */}
-      <main style={{ maxWidth: "1200px", margin: "0 auto", padding: "20px" }}>
-        {/* Hero row */}
+      {/* -------- Page Body -------- */}
+      <main
+        style={{
+          maxWidth: "1200px",
+          margin: "0 auto",
+          padding: "20px 16px 40px",
+        }}
+      >
+        {/* Hero: Search bar + small subheadline */}
+        <section
+          style={{
+            backgroundColor: "#ffffff",
+            borderRadius: "10px",
+            border: "1px solid #e5e7eb",
+            padding: "18px 16px 20px",
+            marginBottom: "20px",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "space-between",
+              gap: "14px",
+              alignItems: "center",
+            }}
+          >
+            <div style={{ flex: "1 1 260px", minWidth: 0 }}>
+              <p
+                style={{
+                  fontSize: "11px",
+                  letterSpacing: "0.18em",
+                  textTransform: "uppercase",
+                  color: "#9ca3af",
+                  marginBottom: "4px",
+                }}
+              >
+                Aggregated Bodybuilding Coverage
+              </p>
+              <h1
+                style={{
+                  fontSize: "24px",
+                  lineHeight: 1.25,
+                  fontWeight: 800,
+                  color: "#111827",
+                  marginBottom: "6px",
+                }}
+              >
+                Search shows, athletes, results, and news across the bodybuilding world.
+              </h1>
+              <p
+                style={{
+                  fontSize: "13px",
+                  color: "#4b5563",
+                  maxWidth: "520px",
+                }}
+              >
+                One search bar to scan IFBB, NPC, news sites, YouTube, Reddit and more.
+                Find scorecards, show coverage, contest prep info, and training content
+                in seconds.
+              </p>
+            </div>
+
+            {/* Search bar */}
+            <div
+              style={{
+                flex: "0 0 380px",
+                minWidth: "280px",
+                maxWidth: "100%",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  gap: "8px",
+                  width: "100%",
+                }}
+              >
+                <input
+                  type="text"
+                  placeholder="Try 'Prague Pro scorecard', 'Samson Dauda', 'Classic Physique 2025'..."
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") goToSearch();
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: "10px 12px",
+                    borderRadius: "999px",
+                    border: "1px solid #d1d5db",
+                    fontSize: "14px",
+                    outline: "none",
+                  }}
+                />
+                <button
+                  onClick={goToSearch}
+                  style={{
+                    padding: "10px 16px",
+                    borderRadius: "999px",
+                    border: "none",
+                    backgroundColor: "#dc2626",
+                    color: "#ffffff",
+                    fontWeight: 600,
+                    fontSize: "13px",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.06em",
+                    cursor: "pointer",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  Search
+                </button>
+              </div>
+
+              {/* Trending tags */}
+              <div
+                style={{
+                  marginTop: "10px",
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: "6px",
+                  fontSize: "11px",
+                  alignItems: "center",
+                }}
+              >
+                <span style={{ color: "#9ca3af" }}>Trending:</span>
+                {[
+                  "Mr. Olympia scorecards",
+                  "Wellness results",
+                  "NPC regional shows",
+                  "Classic Physique lineup",
+                ].map((tag) => (
+                  <button
+                    key={tag}
+                    onClick={() => {
+                      setSearchInput(tag);
+                      const q = encodeURIComponent(tag);
+                      window.location.href = `/search?q=${q}`;
+                    }}
+                    style={{
+                      borderRadius: "999px",
+                      border: "1px solid #e5e7eb",
+                      padding: "4px 8px",
+                      background: "#f9fafb",
+                      color: "#374151",
+                      cursor: "pointer",
+                    }}
+                  >
+                    #{tag}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Main content: Headlines + Sidebar (Calendar + Quick Filters) */}
         <section
           style={{
             display: "grid",
-            gridTemplateColumns: "minmax(0, 2fr) minmax(0, 1.2fr)",
-            gap: "24px",
-            alignItems: "stretch",
+            gridTemplateColumns: "minmax(0, 2.1fr) minmax(0, 1fr)",
+            gap: "20px",
           }}
         >
-          {/* Search hero */}
-          <div
-            style={{
-              borderRadius: "16px",
-              padding: "24px",
-              background:
-                "radial-gradient(circle at top left, #ff184e33, transparent 50%), #0b0d12",
-              border: "1px solid rgba(255,255,255,0.06)",
-              boxShadow: "0 18px 40px rgba(0,0,0,0.6)",
-            }}
-          >
-            <p
-              style={{
-                fontSize: "13px",
-                letterSpacing: "0.17em",
-                textTransform: "uppercase",
-                color: "#ff6b9e",
-                marginBottom: "6px",
-              }}
-            >
-              AI-POWERED AGGREGATOR
-            </p>
-            <h1
-              style={{
-                fontSize: "30px",
-                lineHeight: 1.2,
-                fontWeight: 800,
-                marginBottom: "10px",
-              }}
-            >
-              One search bar for the{" "}
-              <span style={{ color: "#ff184e" }}>entire bodybuilding world</span>.
-            </h1>
-            <p
-              style={{
-                color: "#c0c4d0",
-                fontSize: "15px",
-                maxWidth: "540px",
-              }}
-            >
-              Scan IFBB, NPC, news sites, YouTube, Reddit, and more with a single query.
-              Find show results, scorecards, training content, and gossip in seconds.
-            </p>
-
-            <div
-              style={{
-                marginTop: "18px",
-                display: "flex",
-                gap: "10px",
-              }}
-            >
-              <input
-                type="text"
-                placeholder="Try 'Prague Pro scorecard', 'Samson Dauda', 'Classic Physique 2025'..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") goToSearch();
-                }}
-                style={{
-                  flex: 1,
-                  padding: "12px 14px",
-                  borderRadius: "999px",
-                  border: "1px solid rgba(255,255,255,0.18)",
-                  background: "rgba(4,6,12,0.9)",
-                  color: "#f5f5f5",
-                  fontSize: "15px",
-                  outline: "none",
-                }}
-              />
-              <button
-                onClick={goToSearch}
-                style={{
-                  padding: "12px 18px",
-                  borderRadius: "999px",
-                  border: "none",
-                  background:
-                    "linear-gradient(135deg, #ff184e, #ff7b3b)",
-                  color: "#fff",
-                  fontWeight: 700,
-                  fontSize: "14px",
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  cursor: "pointer",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                Search
-              </button>
-            </div>
-
-            <div
-              style={{
-                marginTop: "14px",
-                display: "flex",
-                gap: "10px",
-                flexWrap: "wrap",
-                fontSize: "12px",
-              }}
-            >
-              <span style={{ color: "#888" }}>Trending:</span>
-              {[
-                "Mr. Olympia scorecards",
-                "Wellness results",
-                "NPC regional shows",
-                "Classic Physique lineup",
-              ].map((tag) => (
-                <button
-                  key={tag}
-                  onClick={() => {
-                    setSearchInput(tag);
-                    const q = encodeURIComponent(tag);
-                    window.location.href = `/search?q=${q}`;
-                  }}
-                  style={{
-                    borderRadius: "999px",
-                    border: "1px solid rgba(255,255,255,0.14)",
-                    padding: "4px 10px",
-                    background: "transparent",
-                    color: "#d0d3dd",
-                    cursor: "pointer",
-                  }}
-                >
-                  #{tag}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Right: quick calendar teaser card */}
-          <div
-            id="shows-calendar"
-            style={{
-              borderRadius: "16px",
-              padding: "18px 18px 20px",
-              background:
-                "radial-gradient(circle at top right, #1e90ff33, transparent 55%), #05060a",
-              border: "1px solid rgba(255,255,255,0.06)",
-              minHeight: "100%",
-            }}
-          >
-            <p
-              style={{
-                fontSize: "13px",
-                letterSpacing: "0.16em",
-                textTransform: "uppercase",
-                color: "#7dd3fc",
-                marginBottom: "6px",
-              }}
-            >
-              GLOBAL SHOWS CALENDAR
-            </p>
-            <h2
-              style={{
-                fontSize: "20px",
-                fontWeight: 700,
-                marginBottom: "6px",
-              }}
-            >
-              NPC & IFBB shows at a glance
-            </h2>
-            <p
-              style={{
-                color: "#b8bfcd",
-                fontSize: "13px",
-                marginBottom: "12px",
-              }}
-            >
-              Click a date to see sample shows. Later, we’ll wire this to live federation
-              data and scorecards.
-            </p>
-
-            {/* Mini month controls */}
+          {/* -------- Headlines Column -------- */}
+          <div>
             <div
               style={{
                 display: "flex",
                 justifyContent: "space-between",
-                alignItems: "center",
+                alignItems: "baseline",
                 marginBottom: "10px",
-                fontSize: "13px",
               }}
             >
-              <button
-                onClick={() => changeMonth(-1)}
+              <h2
                 style={{
-                  border: "none",
-                  background: "transparent",
-                  color: "#9ca3af",
-                  cursor: "pointer",
-                  fontSize: "16px",
+                  fontSize: "18px",
+                  fontWeight: 700,
+                  borderLeft: "4px solid #dc2626",
+                  paddingLeft: "10px",
+                  color: "#111827",
                 }}
               >
-                ‹
-              </button>
-              <span style={{ fontWeight: 600 }}>
-                {new Date(calendarYear, calendarMonth, 1).toLocaleDateString(
-                  undefined,
-                  { month: "long", year: "numeric" }
-                )}
+                Latest bodybuilding headlines
+              </h2>
+              <span
+                style={{
+                  fontSize: "11px",
+                  color: "#9ca3af",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                }}
+              >
+                Auto-refreshed via feeds
               </span>
-              <button
-                onClick={() => changeMonth(1)}
+            </div>
+
+            <div
+              style={{
+                backgroundColor: "#ffffff",
+                borderRadius: "10px",
+                border: "1px solid #e5e7eb",
+                padding: "10px 14px 6px",
+              }}
+            >
+              {headlineLoading && (
+                <p style={{ color: "#6b7280", fontSize: "14px" }}>Loading…</p>
+              )}
+              {headlineError && (
+                <p style={{ color: "#b91c1c", fontSize: "14px" }}>
+                  {headlineError}
+                </p>
+              )}
+
+              {!headlineLoading && !headlineError && headlineHits.length === 0 && (
+                <p style={{ color: "#6b7280", fontSize: "14px" }}>
+                  No headlines yet — try searching directly, or wait for the next ingest
+                  run.
+                </p>
+              )}
+
+              <div>
+                {headlineHits.slice(0, 14).map((hit, index) => (
+                  <article
+                    key={hit.id}
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "minmax(0, 1fr)",
+                      padding: "10px 0",
+                      borderTop: index === 0 ? "none" : "1px solid #e5e7eb",
+                    }}
+                  >
+                    <div>
+                      <a
+                        href={hit.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          fontSize: "15px",
+                          fontWeight: 600,
+                          color: "#111827",
+                          textDecoration: "none",
+                        }}
+                      >
+                        {hit._formatted?.title || hit.title}
+                      </a>
+                      <p
+                        style={{
+                          marginTop: "4px",
+                          fontSize: "13px",
+                          color: "#4b5563",
+                        }}
+                      >
+                        {hit._formatted?.summary || hit.summary}
+                      </p>
+                      <div
+                        style={{
+                          marginTop: "4px",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          fontSize: "11px",
+                          color: "#9ca3af",
+                        }}
+                      >
+                        <span>{hit.source}</span>
+                        {hit.publishedAt && (
+                          <span>{formatDateLabel(hit.publishedAt)}</span>
+                        )}
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* -------- Sidebar: Calendar + Quick Filters -------- */}
+          <aside style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            {/* Shows Calendar */}
+            <div
+              id="shows-calendar"
+              style={{
+                backgroundColor: "#ffffff",
+                borderRadius: "10px",
+                border: "1px solid #e5e7eb",
+                padding: "12px 12px 14px",
+              }}
+            >
+              <p
                 style={{
-                  border: "none",
-                  background: "transparent",
+                  fontSize: "11px",
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
                   color: "#9ca3af",
-                  cursor: "pointer",
-                  fontSize: "16px",
+                  marginBottom: "4px",
                 }}
               >
-                ›
-              </button>
-            </div>
+                Global Shows Calendar
+              </p>
+              <h3
+                style={{
+                  fontSize: "15px",
+                  fontWeight: 700,
+                  marginBottom: "4px",
+                  color: "#111827",
+                }}
+              >
+                NPC & IFBB schedule (sample)
+              </h3>
+              <p
+                style={{
+                  fontSize: "12px",
+                  color: "#6b7280",
+                  marginBottom: "10px",
+                }}
+              >
+                Click a date to see sample shows. Later, this will be wired to live
+                federation calendars and scorecards.
+              </p>
 
-            {/* Weekday labels */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(7, 1fr)",
-                fontSize: "11px",
-                textTransform: "uppercase",
-                color: "#6b7280",
-                marginBottom: "4px",
-              }}
-            >
-              {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
-                <div
-                  key={d}
-                  style={{ textAlign: "center", paddingBottom: "4px" }}
+              {/* Month controls */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "8px",
+                  fontSize: "13px",
+                }}
+              >
+                <button
+                  onClick={() => changeMonth(-1)}
+                  style={{
+                    border: "none",
+                    background: "transparent",
+                    color: "#6b7280",
+                    cursor: "pointer",
+                    fontSize: "16px",
+                  }}
+                  aria-label="Previous month"
                 >
-                  {d}
-                </div>
-              ))}
+                  ‹
+                </button>
+                <span style={{ fontWeight: 600, color: "#111827" }}>
+                  {new Date(calendarYear, calendarMonth, 1).toLocaleDateString(
+                    undefined,
+                    { month: "long", year: "numeric" }
+                  )}
+                </span>
+                <button
+                  onClick={() => changeMonth(1)}
+                  style={{
+                    border: "none",
+                    background: "transparent",
+                    color: "#6b7280",
+                    cursor: "pointer",
+                    fontSize: "16px",
+                  }}
+                  aria-label="Next month"
+                >
+                  ›
+                </button>
+              </div>
+
+              {/* Weekday labels */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(7, 1fr)",
+                  fontSize: "11px",
+                  textTransform: "uppercase",
+                  color: "#9ca3af",
+                  marginBottom: "4px",
+                }}
+              >
+                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
+                  <div
+                    key={d}
+                    style={{ textAlign: "center", paddingBottom: "2px" }}
+                  >
+                    {d}
+                  </div>
+                ))}
+              </div>
+
+              {/* Calendar grid */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(7, 1fr)",
+                  gap: "3px",
+                  fontSize: "12px",
+                }}
+              >
+                {/* Empty cells before first day */}
+                {Array.from({ length: firstWeekday }).map((_, i) => (
+                  <div key={`empty-${i}`} />
+                ))}
+
+                {cells.map(({ label, dateStr }) => {
+                  const isToday =
+                    dateStr === today.toISOString().slice(0, 10);
+                  const isSelected = dateStr === selectedDate;
+                  const hasShow = shows.some((s) => s.date === dateStr);
+
+                  let bg = "#ffffff";
+                  let border = "1px solid #e5e7eb";
+                  let fontWeight = 400;
+                  if (isSelected) {
+                    bg = "#fee2e2";
+                    border = "1px solid #dc2626";
+                    fontWeight = 600;
+                  } else if (hasShow) {
+                    bg = "#e0f2fe";
+                    border = "1px solid #0ea5e9";
+                    fontWeight = 600;
+                  } else if (isToday) {
+                    bg = "#e5e7eb";
+                    fontWeight = 600;
+                  }
+
+                  return (
+                    <button
+                      key={dateStr}
+                      onClick={() => setSelectedDate(dateStr)}
+                      style={{
+                        width: "100%",
+                        aspectRatio: "1 / 1",
+                        borderRadius: "6px",
+                        border,
+                        background: bg,
+                        color: "#111827",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Shows under calendar */}
+              <div
+                style={{
+                  marginTop: "10px",
+                  maxHeight: "150px",
+                  overflowY: "auto",
+                }}
+              >
+                {!selectedDate && (
+                  <p
+                    style={{
+                      fontSize: "12px",
+                      color: "#6b7280",
+                    }}
+                  >
+                    Click a date to see sample shows. Future version will fetch live IFBB
+                    / NPC / other federation shows and scorecards.
+                  </p>
+                )}
+
+                {selectedDate && selectedDayShows.length === 0 && (
+                  <p
+                    style={{
+                      fontSize: "12px",
+                      color: "#6b7280",
+                    }}
+                  >
+                    No shows found for {formatDateLabel(selectedDate)} (in this sample
+                    data).
+                  </p>
+                )}
+
+                {selectedDayShows.map((show) => (
+                  <div
+                    key={show.id}
+                    style={{
+                      padding: "8px 10px",
+                      borderRadius: "8px",
+                      border: "1px solid #e5e7eb",
+                      background: "#f9fafb",
+                      marginBottom: "6px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: "13px",
+                        fontWeight: 600,
+                        marginBottom: "2px",
+                        color: "#111827",
+                      }}
+                    >
+                      {show.name}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "11px",
+                        color: "#6b7280",
+                        marginBottom: "2px",
+                      }}
+                    >
+                      {show.federation} · {show.location}
+                    </div>
+                    {show.url && (
+                      <a
+                        href={show.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          fontSize: "11px",
+                          color: "#2563eb",
+                          textDecoration: "underline",
+                        }}
+                      >
+                        View show details
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {/* Calendar grid */}
+            {/* Quick filters card */}
             <div
               style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(7, 1fr)",
-                gap: "3px",
-                fontSize: "12px",
+                backgroundColor: "#ffffff",
+                borderRadius: "10px",
+                border: "1px solid #e5e7eb",
+                padding: "12px 12px 14px",
               }}
             >
-              {/* Empty cells before first day */}
-              {Array.from({ length: firstWeekday }).map((_, i) => (
-                <div key={`empty-${i}`} />
-              ))}
+              <h3
+                style={{
+                  fontSize: "15px",
+                  fontWeight: 700,
+                  marginBottom: "4px",
+                  color: "#111827",
+                }}
+              >
+                Quick searches
+              </h3>
+              <p
+                style={{
+                  fontSize: "12px",
+                  color: "#6b7280",
+                  marginBottom: "8px",
+                }}
+              >
+                Jump straight into common queries.
+              </p>
 
-              {cells.map(({ label, dateStr }) => {
-                const isToday =
-                  dateStr === today.toISOString().slice(0, 10);
-                const isSelected = dateStr === selectedDate;
-                const hasShow = shows.some((s) => s.date === dateStr);
-
-                let bg = "transparent";
-                let border = "1px solid rgba(148,163,184,0.14)";
-                if (isSelected) {
-                  bg = "rgba(248,113,113,0.18)";
-                  border = "1px solid rgba(248,113,113,0.9)";
-                } else if (hasShow) {
-                  bg = "rgba(56,189,248,0.15)";
-                  border = "1px solid rgba(56,189,248,0.9)";
-                } else if (isToday) {
-                  bg = "rgba(148,163,184,0.25)";
-                }
-
-                return (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "6px",
+                  fontSize: "13px",
+                }}
+              >
+                {[
+                  "Olympia 2025 scorecards",
+                  "IFBB Pro show results",
+                  "Classic Physique news",
+                  "NPC national qualifiers",
+                  "Wellness division results",
+                  "Natty federations WNBF",
+                  "Push pull legs split",
+                  "Contest prep diet science",
+                ].map((label) => (
                   <button
-                    key={dateStr}
-                    onClick={() => setSelectedDate(dateStr)}
+                    key={label}
+                    onClick={() => {
+                      const q = encodeURIComponent(label);
+                      window.location.href = `/search?q=${q}`;
+                    }}
                     style={{
-                      width: "100%",
-                      aspectRatio: "1 / 1",
-                      borderRadius: "8px",
-                      border,
-                      background: bg,
-                      color: "#e5e7eb",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
+                      textAlign: "left",
+                      borderRadius: "999px",
+                      border: "1px solid #e5e7eb",
+                      background: "#f9fafb",
+                      padding: "6px 10px",
+                      color: "#111827",
                       cursor: "pointer",
                     }}
                   >
                     {label}
                   </button>
-                );
-              })}
-            </div>
-
-            {/* Shows under calendar */}
-            <div style={{ marginTop: "12px", maxHeight: "160px", overflowY: "auto" }}>
-              {!selectedDate && (
-                <p
-                  style={{
-                    fontSize: "12px",
-                    color: "#9ca3af",
-                  }}
-                >
-                  Click any date to see sample shows. This will later fetch real IFBB /
-                  NPC calendars and scorecards.
-                </p>
-              )}
-
-              {selectedDate && selectedDayShows.length === 0 && (
-                <p
-                  style={{
-                    fontSize: "12px",
-                    color: "#9ca3af",
-                  }}
-                >
-                  No shows found for {formatDateLabel(selectedDate)} (in this sample
-                  data).
-                </p>
-              )}
-
-              {selectedDayShows.map((show) => (
-                <div
-                  key={show.id}
-                  style={{
-                    padding: "8px 10px",
-                    borderRadius: "8px",
-                    border: "1px solid rgba(148,163,184,0.25)",
-                    background: "rgba(15,23,42,0.8)",
-                    marginBottom: "6px",
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: "13px",
-                      fontWeight: 600,
-                      marginBottom: "2px",
-                    }}
-                  >
-                    {show.name}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: "11px",
-                      color: "#9ca3af",
-                      marginBottom: "2px",
-                    }}
-                  >
-                    {show.federation} · {show.location}
-                  </div>
-                  {show.url && (
-                    <a
-                      href={show.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      style={{
-                        fontSize: "11px",
-                        color: "#38bdf8",
-                        textDecoration: "underline",
-                      }}
-                    >
-                      View show details
-                    </a>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* -------- Headlines Section -------- */}
-        <section style={{ marginTop: "30px", display: "grid", gridTemplateColumns: "minmax(0, 2.1fr) minmax(0, 1fr)", gap: "24px" }}>
-          {/* Latest headlines list */}
-          <div>
-            <h2
-              style={{
-                fontSize: "20px",
-                fontWeight: 700,
-                marginBottom: "10px",
-                borderLeft: "3px solid #ff184e",
-                paddingLeft: "10px",
-              }}
-            >
-              Latest bodybuilding headlines
-            </h2>
-
-            {headlineLoading && (
-              <p style={{ color: "#9ca3af", fontSize: "14px" }}>Loading…</p>
-            )}
-            {headlineError && (
-              <p style={{ color: "#f97373", fontSize: "14px" }}>
-                {headlineError}
-              </p>
-            )}
-
-            {!headlineLoading && !headlineError && headlineHits.length === 0 && (
-              <p style={{ color: "#9ca3af", fontSize: "14px" }}>
-                No headlines yet — try searching directly, or wait for the next ingest
-                run.
-              </p>
-            )}
-
-            <div>
-              {headlineHits.slice(0, 12).map((hit) => (
-                <article
-                  key={hit.id}
-                  style={{
-                    padding: "14px 0",
-                    borderBottom: "1px solid rgba(148,163,184,0.3)",
-                  }}
-                >
-                  <a
-                    href={hit.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{
-                      fontSize: "16px",
-                      fontWeight: 600,
-                      color: "#e5e7eb",
-                      textDecoration: "none",
-                    }}
-                  >
-                    {hit._formatted?.title || hit.title}
-                  </a>
-
-                  <p
-                    style={{
-                      marginTop: "4px",
-                      fontSize: "13px",
-                      color: "#9ca3af",
-                    }}
-                  >
-                    {hit._formatted?.summary || hit.summary}
-                  </p>
-
-                  <div
-                    style={{
-                      marginTop: "4px",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      fontSize: "11px",
-                      color: "#6b7280",
-                    }}
-                  >
-                    <span>{hit.source}</span>
-                    {hit.publishedAt && (
-                      <span>{formatDateLabel(hit.publishedAt)}</span>
-                    )}
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-
-          {/* Sidebar with quick filters */}
-          <aside
-            style={{
-              borderRadius: "16px",
-              padding: "16px 16px 18px",
-              background: "rgba(15,23,42,0.9)",
-              border: "1px solid rgba(148,163,184,0.3)",
-              height: "fit-content",
-            }}
-          >
-            <h3
-              style={{
-                fontSize: "16px",
-                fontWeight: 600,
-                marginBottom: "8px",
-              }}
-            >
-              Quick filters
-            </h3>
-            <p style={{ fontSize: "12px", color: "#9ca3af", marginBottom: "10px" }}>
-              Jump straight into common searches.
-            </p>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "6px",
-                fontSize: "13px",
-              }}
-            >
-              {[
-                "Olympia 2025 scorecards",
-                "Pro show results",
-                "Classic Physique news",
-                "NPC national qualifiers",
-                "Wellness division",
-                "Natty federations WNBF",
-                "Training split push pull legs",
-                "Diet contest prep science",
-              ].map((label) => (
-                <button
-                  key={label}
-                  onClick={() => {
-                    const q = encodeURIComponent(label);
-                    window.location.href = `/search?q=${q}`;
-                  }}
-                  style={{
-                    textAlign: "left",
-                    borderRadius: "999px",
-                    border: "1px solid rgba(148,163,184,0.4)",
-                    background: "transparent",
-                    padding: "6px 10px",
-                    color: "#e5e7eb",
-                    cursor: "pointer",
-                  }}
-                >
-                  {label}
-                </button>
-              ))}
+                ))}
+              </div>
             </div>
           </aside>
         </section>
@@ -771,16 +849,16 @@ export default function HomePage() {
         {/* Footer */}
         <footer
           style={{
-            marginTop: "30px",
-            padding: "16px 0 10px",
+            marginTop: "28px",
+            paddingTop: "14px",
+            borderTop: "1px solid #e5e7eb",
             fontSize: "11px",
-            color: "#6b7280",
-            borderTop: "1px solid rgba(31,41,55,1)",
+            color: "#9ca3af",
             textAlign: "center",
           }}
         >
-          WorldBodybuildingNews • Aggregating IFBB, NPC & bodybuilding media into one
-          search. Data refreshed via scheduled ingests.
+          WorldBodybuildingNews • Aggregating IFBB, NPC & global bodybuilding media into
+          one searchable hub. Data refreshed via scheduled ingests.
         </footer>
       </main>
     </div>
