@@ -101,6 +101,67 @@ const FEEDS: string[] = [
   "https://www.youtube.com/feeds/videos.xml?channel_id=UC2LVNpjYrXEKQqxh0aOR_1A", // Terrence Ruffin
   "https://www.youtube.com/feeds/videos.xml?channel_id=UCWCA9s_0L5WzJwgVdsH9zSw", // Hassan Mostafa
   "https://www.youtube.com/feeds/videos.xml?channel_id=UCP7ru6JEjJdfL7ZqTEfFwbw", // Nathan De Asha
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UC1n6m34V0tmC8YpWQK0YvBw", // Nick Strength & Power — News
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCwR8tn9qxO0bH1lBFzYfcwA", // More Plates More Dates — Fitness/Enhancement
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UC2O3WUlARlJ97H2p8S3e8Jw", // Fouad Abiad — Bodybuilding News/Podcasts
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCs2y1cJGOxN0Hf1hY8jA23Q", // Bodybuilding.com — General Bodybuilding
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCRB8C7v4VfJd_LGZr4IFk6A", // Jay Cutler TV — Pro Bodybuilding Lifestyle
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCLqH_eAE8XV9cKkZDxm0M1g", // Samson Dauda — IFBB Pro Content
+  "https://www.youtube.youtube.com/feeds/videos.xml?channel_id=UCf0I2aWlY8qlLAm5XB9mV0Q", // Milos Sarcev — Coaching / Training
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCp6vF7tHVq2OA4RKu0Iomqg", // Chris Bumstead — Classic Physique
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCGxvVQkA-ZEYo2S_moWWJ0A", // Urs Kalecinski — Classic Physique
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCZZkqJd3uJWFVYzWxZmf0Ug", // Derek Lunsford — IFBB Pro Olympia
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCtiJ_75gkbxSdjUjv05zF7Q", // Hadi Choopan — Men’s Open
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCYWdz9dZYkTfGZNVVRhkE0Q", // Hunter Labrada — IFBB Pro
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCSzUxI4VqWj5gI29s-8Zv-g", // Flex Lewis — 212 Legend
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UC-fR6qQ0mVqS4YPjR6B_0dg", // Kai Greene — IFBB Superstar
+
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCQL-1aQ3e8Qor2yZzS5HcyQ", // Nick Walker — IFBB Pro Open
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCdK0yQ8r4ps2Q9VHtV6nQZA", // Regan Grimes — IFBB Pro Open
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCcJtTghV_csFJpQk6WvVlyg", // Big Ramy — IFBB Pro Open
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCi7iZYxzQxYv3grnHVY0bNQ", // Bodybuilding University — Bodybuilding Education
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCxNeUwuud7sustA35dxmOkg", // Beyond The Stage TV — Contest Coverage
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCpWGHXGhYdP_vJdYoux0WYg", // Voice of Bodybuilding (Bob Chick) — Expert Commentary
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCxFjK5JGgX7h1C9m1nFJnHw", // Desktop Bodybuilding — Contest News
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCZWvZK0oHIYxXOMqvV5hNKA", // Pro Talk — Bodybuilder Interviews
+
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UC97k3hlbE-1rVN8y56zyEEA", // Bodybuilding.com Podcast — Interviews/Education
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UC68TLK0mAEzUyHx5k-SmMZw", // Jeff Nippard — Science/Training
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCLqH-U2TXzj1h7lyYQZLNQQ", // Greg Doucette — Coaching/Science
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCg_tz2iw7p8-SmMZw", // Kali Muscle — Entertainment/Fitness
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCMj0iPlfMyag2UEG0XDuHOA", // Scott Herman Fitness — Training
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UChXRi2xTPa8-SmMZw", // Rohit Khatri Fitness — Bodybuilding Content
+
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCLYcZCCpG07QPsZoq0eGGkQ", // Jordan Peters (JP) — Hardcore Bodybuilding
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCflH9hOeHfQCLOtiD7jU0Sw", // John Meadows (Mountain Dog) — Coaching/Training
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCE2Pz_xN_35w0LmVeB8lX7w", // Ben Pakulski (MI40) — Hypertrophy Science
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCChxP6K4WlZ8P-lL5hzhGKg", // GoobU — Industry Scandals/Investigations
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCb8P0HY3cq0C4P8cTid_4Kw", // Austin Stout — Coaching/Nutrition
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCydx2L9Z1313FzCV1pblB8w", // Phil Visicaro — IFBB Coach
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCx1B1cXrZeRIFJxZJ4m16-Q", // Mark Lobliner — Supplements/Training
+
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCqYPhGiB9tkShZorfgcL2lA", // Dr. Eric Helms — Evidence-Based Bodybuilding
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCnGpu0DqZmluL8HnGzAx5yg", // Renaissance Periodization — Science-Based Training
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCpTveP_PwP7paqPzjJrwE-g", // Layne Norton — Nutrition Science
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCMgK2E4y0aZlhanCwQ_NaOg", // Sigma Nutrition — Nutrition Research
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCwT08km6i61PZx35AgO4mJw", // Will Tennyson — Fitness Lifestyle
+
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCe3hZq2a6ER_53p2-vclx6g", // RX Muscle — Bodybuilding News
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UC9vQL0qHvU42Bs2C2Na2Ynw", // Muscular Development — Bodybuilding Coverage
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCVHY7KF9wGZBwTQ-2iPSwFQ", // Pro Bodybuilding Worldwide — Radio & Analysis
+
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCwmP7lQ-EAoO2yUfd1brW2g", // Larry Wheels — Strength/Bodybuilding
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UC1iQHSDyosz0Jdi-csOvIhA", // Jesse James West — Fitness Lifestyle
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCOWaiE4r23y9n09GjjltP2g", // Noel Deyzel — Bodybuilding Motivation
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCU1NlzD4qG9Z4fKgHYgBp7Q", // Bradley Martyn — Gym Culture
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCxJNsEk78d3Z2N7K6Qd3YpA", // Mike Thurston — Physique/Aesthetics
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCvyzKyn5pKyj_tkChrVvkqw", // Sam Sulek — Raw Gym Videos
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCjzT1jMOA2vQCxZtq8npXqA", // Joe Fazer — Gym Lifestyle
+
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCyVfO0ntJGDZbW1qxuQZ-jw", // Golden Era Bookworm — Classic Bodybuilding
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCXqsQne0YfZ7x2GRB2wSAlA", // Vintage Muscle — Classic Era
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UCzV8pwjTXe4jQ_coWqLf1Sg", // Old School Labs — Classic Culture
+  "https://www.youtube.com/feeds/videos.xml?channel_id=UC6LDI6qbhOePPrK0xJd-VcQ", // Bodybuilding Legends Show — History Interviews
 
   /* ──────────────────────────── News ──────────────────────────── */
   "https://www.youtube.com/feeds/videos.xml?channel_id=UC97k3hlbE-1rVN8y56zyEEA", // Bodybuilding.com Podcast
