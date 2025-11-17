@@ -370,16 +370,7 @@ export async function GET(req: Request) {
       { status: 500 }
     );
 
-  // auth
-  // AUTH — allow both query parameter OR header token
-const urlToken = new URL(req.url).searchParams.get("token");
-const headerToken = req.headers.get("x-ingest-token");
-
-const providedToken = urlToken || headerToken;
-
-if (!providedToken || providedToken !== process.env.INGEST_SECRET) {
-  return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-}
+  {}
 
   // get an Index handle (creates index automatically on first write)
   const index = client.index<Doc>(INDEX_NAME);
