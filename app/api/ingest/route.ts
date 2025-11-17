@@ -31,9 +31,21 @@ const FEEDS: string[] = [
   "https://girlswhopowerlift.com/feed/",
 
   /* Reddit */
-  "https://www.reddit.com/r/bodybuilding/.rss",
-  "https://www.reddit.com/r/naturalbodybuilding/.rss",
   "https://www.reddit.com/r/fitness/.rss",
+  "https://www.reddit.com/r/bodybuilding/.rss",
+  "https://www.reddit.com/r/bodybuildingadvice/.rss",
+  "https://www.reddit.com/r/naturalbodybuilding/.rss",
+  "https://www.reddit.com/r/strength_training/.rss",
+  "https://www.reddit.com/r/fitness/.rss",
+  "https://www.reddit.com/r/powerlifting/.rss",
+  "https://www.reddit.com/r/weightlifting/.rss",
+  "https://www.reddit.com/r/bodybuildingforum/.rss",
+  "https://www.reddit.com/r/classicbodybuilding/.rss",
+  "https://www.reddit.com/r/planetfitnessmembers/.rss",
+  "https://www.reddit.com/r/jeffnippard/.rss",
+  "https://www.reddit.com/r/weightliftingquestion/.rss",
+  "https://www.reddit.com/r/weighttraining/.rss",
+  "https://www.reddit.com/r/workout/.rss"
 
   /* FITNESS & TRAINING */
   "https://breakingmuscle.com/feed/",
