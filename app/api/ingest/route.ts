@@ -218,7 +218,7 @@ const FEEDS: string[] = [
   "https://rsshub.app/instagram/user/joeyswoll",
   "https://rsshub.app/instagram/user/joelinibro_ifbb",
   "https://rsshub.app/instagram/user/valentinpetrovpro",
-  "https://rsshub.app/instagram/user/martynfordofficial"
+  "https://rsshub.app/instagram/user/martynfordofficial", 
   
   /* ──────────────────────────── TIKTOK via RSSHub ──────────────────────────── */
   "https://rsshub.app/tiktok/user/@samsondauda",
@@ -234,7 +234,7 @@ const FEEDS: string[] = [
   "https://rsshub.app/tiktok/user/@patrickmooreifbb",
   "https://rsshub.app/tiktok/user/@roellywinklaar",
   "https://rsshub.app/tiktok/user/@martynfordofficial",
-  "https://rsshub.app/tiktok/user/@sadikhadzovic"
+  "https://rsshub.app/tiktok/user/@sadikhadzovic",
   "https://rsshub.app/tiktok/user/@nick_walker39",
   "https://rsshub.app/tiktok/user/@regangrimes",
 
@@ -254,8 +254,6 @@ const FEEDS: string[] = [
   "https://www.naturalbodybuilding.com/feed/",
   "https://www.gbo-online.com/feed/",
   "https://www.musclemania.com/feed/",
-
-  /* New federations */
   "https://www.npcworldwide.com/feed/",
   "https://www.icnworldwide.com/feed/",
   "https://www.unkbff.com/feed/",
