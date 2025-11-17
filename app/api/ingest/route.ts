@@ -45,7 +45,7 @@ const FEEDS: string[] = [
   "https://www.reddit.com/r/jeffnippard/.rss",
   "https://www.reddit.com/r/weightliftingquestion/.rss",
   "https://www.reddit.com/r/weighttraining/.rss",
-  "https://www.reddit.com/r/workout/.rss"
+  "https://www.reddit.com/r/workout/.rss",
 
   /* FITNESS & TRAINING */
   "https://breakingmuscle.com/feed/",
