@@ -1,117 +1,142 @@
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 
-/**
- * Fetch HTML and load cheerio
- */
-async function load(url: string) {
-  const res = await fetch(url, {
-    headers: { "User-Agent": "Mozilla/5.0" },
-    cache: "no-cache"
-  });
-  const html = await res.text();
-  return cheerio.load(html);
+const MEILI_HOST = process.env.MEILI_HOST!;
+const MEILI_MASTER_KEY = process.env.MEILI_MASTER_KEY!;
+
+async function fetchHTML(url: string) {
+  const res = await fetch(url, { cache: "no-store" });
+  return await res.text();
 }
 
-/**
- * Scrape IFBB Pro Show Listings (list page)
- */
-async function scrapeIFBBShowList() {
-  const url = "https://ifbbpro.com/";
-  const $ = await load(url);
+function parseNPCShowPage(html: string, url: string) {
+  const $ = cheerio.load(html);
 
-  const events: any[] = [];
+  const title = $("h1").first().text().trim();
+  const dateText = $("time").first().text().trim();
+  const location = $(".tribe-events-venue")
+    .first()
+    .text()
+    .trim()
+    .replace(/\s+/g, " ");
 
-  $("article").each((i, el) => {
-    const title = $(el).find("h2").text().trim();
-    const link = $(el).find("a").attr("href") ?? "";
-    const date = $(el).find(".published").text().trim();
-
-    if (!title || !link) return;
-
-    events.push({
-      id: `ifbbpro-${i}`,
-      federation: "IFBB Pro League",
-      title,
-      date,
-      url: link
-    });
-  });
-
-  return events;
+  return {
+    id: url,
+    source: "npcnewsonline",
+    title,
+    date: dateText,
+    location,
+    url,
+  };
 }
 
-/**
- * Scrape NPC News Online Show Listings (list page)
- */
-async function scrapeNPCShowList() {
-  const url = "https://npcnewsonline.com/schedule/";
-  const $ = await load(url);
+function parseIFBBShowPage(html: string, url: string) {
+  const $ = cheerio.load(html);
 
-  const events: any[] = [];
+  const title = $("h1").first().text().trim();
+  const dateText = $(".fusion-events-date, time").first().text().trim();
+  const location = $(".fusion-events-address, .tribe-events-venue")
+    .first()
+    .text()
+    .trim()
+    .replace(/\s+/g, " ");
 
-  $(".fusion-post-wrapper").each((i, el) => {
-    const title = $(el).find(".fusion-post-title").text().trim();
-    const link = $(el).find("a").attr("href") ?? "";
-    const date = $(el).find(".fusion-alignleft").text().trim();
-
-    if (!title || !link) return;
-
-    events.push({
-      id: `npc-${i}`,
-      federation: "NPC",
-      title,
-      date,
-      url: link
-    });
-  });
-
-  return events;
+  return {
+    id: url,
+    source: "ifbbpro",
+    title,
+    date: dateText,
+    location,
+    url,
+  };
 }
 
-/**
- * Send data to MeiliSearch
- */
-async function indexShows(documents: any[]) {
-  const host = process.env.MEILI_HOST!;
-  const apiKey = process.env.MEILI_MASTER_KEY!;
+async function scrapeNPC() {
+  const base = "https://npcnewsonline.com/schedule/";
+  const indexHTML = await fetchHTML(base);
 
-  const res = await fetch(`${host}/indexes/shows/documents`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`
-    },
-    body: JSON.stringify(documents)
+  const $ = cheerio.load(indexHTML);
+
+  const links = [];
+  $("a").each((i, el) => {
+    const href = $(el).attr("href");
+    if (href && href.includes("/schedule_event/")) {
+      links.push(href);
+    }
   });
 
-  const data = await res.json();
-  return data;
+  const uniqueLinks = [...new Set(links)];
+
+  const shows = [];
+  for (const link of uniqueLinks) {
+    try {
+      const html = await fetchHTML(link);
+      shows.push(parseNPCShowPage(html, link));
+    } catch (e) {
+      console.log("NPC scrape error for:", link);
+    }
+  }
+
+  return shows;
 }
 
-/**
- * MAIN ROUTE HANDLER
- */
+async function scrapeIFBB() {
+  const base = "https://ifbbpro.com/events/";
+  const indexHTML = await fetchHTML(base);
+
+  const $ = cheerio.load(indexHTML);
+
+  const links = [];
+  $("a").each((i, el) => {
+    const href = $(el).attr("href");
+    if (href && href.includes("/competition/")) {
+      links.push(href);
+    }
+  });
+
+  const uniqueLinks = [...new Set(links)];
+
+  const shows = [];
+  for (const link of uniqueLinks) {
+    try {
+      const html = await fetchHTML(link);
+      shows.push(parseIFBBShowPage(html, link));
+    } catch (e) {
+      console.log("IFBB scrape error for:", link);
+    }
+  }
+
+  return shows;
+}
+
 export async function GET() {
   try {
-    console.log("Scraping IFBB & NPC show data…");
+    const npc = await scrapeNPC();
+    const ifbb = await scrapeIFBB();
 
-    const [ifbb, npc] = await Promise.all([
-      scrapeIFBBShowList(),
-      scrapeNPCShowList()
-    ]);
+    const allShows = [...npc, ...ifbb];
 
-    const allShows = [...ifbb, ...npc];
-
-    console.log(`Found ${allShows.length} shows.`);
-
-    const result = await indexShows(allShows);
+    await fetch(`${MEILI_HOST}/indexes/shows/documents`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${MEILI_MASTER_KEY}`,
+      },
+      body: JSON.stringify(allShows),
+    });
 
     return NextResponse.json({
       ok: true,
       total: allShows.length,
-      result,
-      message: "Shows index updated."
+      message: "Shows index updated.",
     });
   } catch (err: any) {
-    return NextResponse.json
+    return NextResponse.json(
+      {
+        ok: false,
+        error: err?.message,
+      },
+      { status: 500 }
+    );
+  }
+}
