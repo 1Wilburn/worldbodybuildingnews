@@ -679,13 +679,522 @@ export default function HomePage() {
                         width: "100%",
                         aspectRatio: "1 / 1",
                         borderRadius: "6px",
-                        border,
-                        background: bg,
+"use client";
+
+import { useEffect, useState } from "react";
+
+type SearchHit = {
+  id: string;
+  title: string;
+  url: string;
+  source: string;
+  summary?: string;
+  publishedAt?: string;
+  _formatted?: {
+    title?: string;
+    summary?: string;
+  };
+};
+
+type ShowEvent = {
+  id: string;
+  name: string;
+  federation: string;
+  location: string;
+  date: string; // YYYY-MM-DD
+  url?: string;
+};
+
+function formatDateLabel(dateStr: string) {
+  const d = new Date(dateStr);
+  if (Number.isNaN(d.getTime())) return dateStr;
+  return d.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
+export default function HomePage() {
+  const [headlineHits, setHeadlineHits] = useState<SearchHit[]>([]);
+  const [headlineLoading, setHeadlineLoading] = useState(false);
+  const [headlineError, setHeadlineError] = useState<string | null>(null);
+  const [searchInput, setSearchInput] = useState("");
+
+  // Email signup
+  const [email, setEmail] = useState("");
+  const [emailStatus, setEmailStatus] = useState<"idle" | "success" | "error">(
+    "idle"
+  );
+
+  // Calendar State
+  const today = new Date();
+  const [calendarMonth, setCalendarMonth] = useState(today.getMonth());
+  const [calendarYear, setCalendarYear] = useState(today.getFullYear());
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+
+  // Placeholder data — will be replaced with real scraped + indexed contest data
+  const [shows] = useState<ShowEvent[]>([
+    {
+      id: "sample-1",
+      name: "Sample IFBB Pro Show",
+      federation: "IFBB Pro League",
+      location: "Orlando, FL",
+      date: "2025-11-22",
+      url: "https://ifbbpro.com",
+    },
+    {
+      id: "sample-2",
+      name: "NPC Regional Classic",
+      federation: "NPC",
+      location: "New York, NY",
+      date: "2025-11-29",
+      url: "https://npcnewsonline.com",
+    },
+  ]);
+
+  const selectedDayShows = selectedDate
+    ? shows.filter((s) => s.date === selectedDate)
+    : [];
+
+  // Load homepage headlines
+  useEffect(() => {
+    async function loadHeadlines() {
+      try {
+        setHeadlineLoading(true);
+
+        const res = await fetch("/api/search?q=bodybuilding");
+        const json = await res.json();
+
+        setHeadlineHits(json.hits || []);
+      } catch (err: any) {
+        setHeadlineError(err?.message || "Failed to load headlines");
+      } finally {
+        setHeadlineLoading(false);
+      }
+    }
+
+    loadHeadlines();
+  }, []);
+
+  function goToSearch() {
+    if (!searchInput.trim()) return;
+    window.location.href = `/search?q=${encodeURIComponent(searchInput)}`;
+  }
+
+  function changeMonth(delta: number) {
+    const b = new Date(calendarYear, calendarMonth, 1);
+    b.setMonth(b.getMonth() + delta);
+    setCalendarMonth(b.getMonth());
+    setCalendarYear(b.getFullYear());
+    setSelectedDate(null);
+  }
+
+  function buildCalendarDays() {
+    const firstOfMonth = new Date(calendarYear, calendarMonth, 1);
+    const firstWeekday = firstOfMonth.getDay();
+    const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
+
+    const cells = [];
+    for (let i = 1; i <= daysInMonth; i++) {
+      const d = new Date(calendarYear, calendarMonth, i);
+      const dateStr = d.toISOString().slice(0, 10);
+      cells.push({ label: i, dateStr });
+    }
+
+    return { firstWeekday, cells };
+  }
+
+  const { firstWeekday, cells } = buildCalendarDays();
+
+  async function submitEmail() {
+    if (!email.trim()) return;
+
+    try {
+      const res = await fetch("/api/subscribe", {
+        method: "POST",
+        body: JSON.stringify({ email }),
+      });
+
+      if (res.ok) {
+        setEmail("");
+        setEmailStatus("success");
+      } else {
+        setEmailStatus("error");
+      }
+    } catch {
+      setEmailStatus("error");
+    }
+  }
+
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        backgroundColor: "#f4f5f7",
+        color: "#111827",
+        fontFamily: "system-ui, sans-serif",
+      }}
+    >
+      {/* ---------- TOP NAV ---------- */}
+      <header
+        style={{
+          borderBottom: "1px solid #e5e7eb",
+          backgroundColor: "#ffffff",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 1200,
+            margin: "0 auto",
+            padding: "14px 16px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: "12px",
+          }}
+        >
+          <div
+            onClick={() => (window.location.href = "/")}
+            style={{ cursor: "pointer", display: "flex", gap: 4 }}
+          >
+            <span style={{ fontSize: 22, fontWeight: 800 }}>World</span>
+            <span
+              style={{ fontSize: 22, fontWeight: 800, color: "#dc2626" }}
+            >
+              Bodybuilding
+            </span>
+            <span style={{ fontSize: 22, fontWeight: 800 }}>News</span>
+          </div>
+
+          <nav style={{ display: "flex", gap: 16 }}>
+            <button style={navBtn} onClick={() => (window.location.href = "/")}>
+              Home
+            </button>
+
+            <button
+              style={navBtn}
+              onClick={() => (window.location.href = "/search")}
+            >
+              Search
+            </button>
+
+            <button
+              style={navBtn}
+              onClick={() =>
+                document
+                  .getElementById("shows-calendar")
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
+            >
+              Shows Calendar
+            </button>
+          </nav>
+        </div>
+      </header>
+
+      {/* ---------- MAIN ---------- */}
+      <main
+        style={{
+          maxWidth: 1200,
+          margin: "0 auto",
+          padding: "20px 16px",
+        }}
+      >
+        {/* ---------- HERO SEARCH ---------- */}
+        <section
+          style={{
+            background: "#ffffff",
+            padding: "18px 16px",
+            borderRadius: 10,
+            border: "1px solid #e5e7eb",
+            marginBottom: 20,
+          }}
+        >
+          <h1 style={{ fontSize: 24, fontWeight: 800, marginBottom: 6 }}>
+            Search shows, athletes, scorecards & news.
+          </h1>
+
+          <div
+            style={{
+              display: "flex",
+              gap: 8,
+              marginTop: 10,
+            }}
+          >
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Try 'Prague Pro scorecard', 'Urs', 'Samson Dauda'"
+              onKeyDown={(e) => e.key === "Enter" && goToSearch()}
+              style={{
+                flex: 1,
+                padding: "10px 12px",
+                borderRadius: 999,
+                border: "1px solid #d1d5db",
+              }}
+            />
+            <button
+              onClick={goToSearch}
+              style={{
+                padding: "10px 18px",
+                borderRadius: 999,
+                background: "#dc2626",
+                color: "#fff",
+                border: "none",
+                fontWeight: 600,
+                cursor: "pointer",
+              }}
+            >
+              Search
+            </button>
+          </div>
+        </section>
+
+        {/* ---------- EMAIL SIGNUP ---------- */}
+        <section
+          style={{
+            backgroundColor: "#ffffff",
+            border: "1px solid #e5e7eb",
+            borderRadius: 10,
+            padding: "16px",
+            marginBottom: 20,
+          }}
+        >
+          <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 6 }}>
+            Get bodybuilding show alerts
+          </h3>
+          <p style={{ fontSize: 13, color: "#4b5563", marginBottom: 12 }}>
+            Enter your email to receive updates on upcoming shows and scorecards from
+            recently judged contests.
+          </p>
+
+          <div style={{ display: "flex", gap: 8 }}>
+            <input
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              style={{
+                flex: 1,
+                padding: "8px 12px",
+                border: "1px solid #d1d5db",
+                borderRadius: 8,
+                fontSize: 14,
+              }}
+            />
+
+            <button
+              onClick={submitEmail}
+              style={{
+                padding: "9px 16px",
+                backgroundColor: "#2563eb",
+                borderRadius: 8,
+                color: "#fff",
+                border: "none",
+                fontWeight: 600,
+                cursor: "pointer",
+              }}
+            >
+              Subscribe
+            </button>
+          </div>
+
+          {emailStatus === "success" && (
+            <p style={{ marginTop: 8, color: "green", fontSize: 13 }}>
+              You're subscribed!
+            </p>
+          )}
+
+          {emailStatus === "error" && (
+            <p style={{ marginTop: 8, color: "red", fontSize: 13 }}>
+              Something went wrong. Try again.
+            </p>
+          )}
+        </section>
+
+        {/* ---------- GRID LAYOUT ---------- */}
+        <section
+          style={{
+            display: "grid",
+            gridTemplateColumns: "minmax(0,2fr) minmax(0,1fr)",
+            gap: 20,
+          }}
+        >
+          {/* ---------- FV-1 HEADLINES GRID ---------- */}
+          <div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginBottom: 12,
+              }}
+            >
+              <h2
+                style={{
+                  fontSize: 20,
+                  fontWeight: 700,
+                  borderLeft: "4px solid #dc2626",
+                  paddingLeft: 10,
+                }}
+              >
+                Latest Bodybuilding Headlines
+              </h2>
+              <span
+                style={{
+                  fontSize: 11,
+                  color: "#9ca3af",
+                  textTransform: "uppercase",
+                }}
+              >
+                Updated automatically
+              </span>
+            </div>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns:
+                  "repeat(auto-fill, minmax(260px, 1fr))",
+                gap: 16,
+              }}
+            >
+              {headlineLoading && (
+                <p style={{ color: "#6b7280" }}>Loading…</p>
+              )}
+
+              {headlineError && (
+                <p style={{ color: "red" }}>{headlineError}</p>
+              )}
+
+              {headlineHits.slice(0, 20).map((hit) => (
+                <article
+                  key={hit.id}
+                  style={{
+                    backgroundColor: "#fff",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: 10,
+                    padding: 14,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <div>
+                    <a
+                      href={hit.url}
+                      target="_blank"
+                      style={{
+                        fontSize: 16,
+                        fontWeight: 700,
+                        textDecoration: "none",
                         color: "#111827",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        cursor: "pointer",
+                      }}
+                    >
+                      {hit._formatted?.title || hit.title}
+                    </a>
+
+                    {hit.summary && (
+                      <p
+                        style={{
+                          fontSize: 13,
+                          color: "#4b5563",
+                          marginTop: 6,
+                        }}
+                      >
+                        {hit._formatted?.summary || hit.summary}
+                      </p>
+                    )}
+                  </div>
+
+                  <div
+                    style={{
+                      marginTop: 10,
+                      fontSize: 11,
+                      display: "flex",
+                      justifyContent: "space-between",
+                      color: "#6b7280",
+                    }}
+                  >
+                    <span>{hit.source}</span>
+                    <span>{hit.publishedAt && formatDateLabel(hit.publishedAt)}</span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          {/* ---------- RIGHT SIDEBAR (CALENDAR + QUICK LINKS) ---------- */}
+          <aside style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            {/* ----- Shows Calendar ----- */}
+            <div
+              id="shows-calendar"
+              style={{
+                backgroundColor: "#ffffff",
+                border: "1px solid #e5e7eb",
+                borderRadius: 10,
+                padding: 14,
+              }}
+            >
+              <h3 style={{ fontSize: 15, fontWeight: 700 }}>Shows Calendar</h3>
+
+              {/* Month */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginTop: 8,
+                }}
+              >
+                <button style={monthBtn} onClick={() => changeMonth(-1)}>
+                  ‹
+                </button>
+
+                <span>{new Date(calendarYear, calendarMonth, 1).toLocaleDateString(undefined, { month: "long", year: "numeric" })}</span>
+
+                <button style={monthBtn} onClick={() => changeMonth(1)}>
+                  ›
+                </button>
+              </div>
+
+              {/* Calendar Grid */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(7, 1fr)",
+                  marginTop: 6,
+                  fontSize: 12,
+                }}
+              >
+                {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map((w) => (
+                  <div key={w} style={{ textAlign: "center", color: "#6b7280" }}>
+                    {w}
+                  </div>
+                ))}
+
+                {Array.from({ length: firstWeekday }).map((_, i) => (
+                  <div key={`e-${i}`} />
+                ))}
+
+                {cells.map(({ label, dateStr }) => {
+                  const isSelected = selectedDate === dateStr;
+                  const hasShow = shows.some((s) => s.date === dateStr);
+
+                  return (
+                    <button
+                      key={dateStr}
+                      onClick={() => setSelectedDate(dateStr)}
+                      style={{
+                        aspectRatio: "1 / 1",
+                        borderRadius: 6,
+                        margin: 2,
+                        border: "1px solid #e5e7eb",
+                        background: isSelected
+                          ? "#fee2e2"
+                          : hasShow
+                          ? "#e0f2fe"
+                          : "#fff",
                       }}
                     >
                       {label}
@@ -694,151 +1203,76 @@ export default function HomePage() {
                 })}
               </div>
 
-              {/* Shows under calendar */}
-              <div
-                style={{
-                  marginTop: "10px",
-                  maxHeight: "150px",
-                  overflowY: "auto",
-                }}
-              >
-                {!selectedDate && (
-                  <p
-                    style={{
-                      fontSize: "12px",
-                      color: "#6b7280",
-                    }}
-                  >
-                    Click a date to see sample shows. Future version will fetch live IFBB
-                    / NPC / other federation shows and scorecards.
+              <div style={{ marginTop: 10 }}>
+                {!selectedDate ? (
+                  <p style={{ fontSize: 12, color: "#6b7280" }}>
+                    Select a date to view scheduled contests.
                   </p>
-                )}
-
-                {selectedDate && selectedDayShows.length === 0 && (
-                  <p
-                    style={{
-                      fontSize: "12px",
-                      color: "#6b7280",
-                    }}
-                  >
-                    No shows found for {formatDateLabel(selectedDate)} (in this sample
-                    data).
+                ) : selectedDayShows.length === 0 ? (
+                  <p style={{ fontSize: 12, color: "#6b7280" }}>
+                    No shows found on {formatDateLabel(selectedDate)}.
                   </p>
-                )}
-
-                {selectedDayShows.map((show) => (
-                  <div
-                    key={show.id}
-                    style={{
-                      padding: "8px 10px",
-                      borderRadius: "8px",
-                      border: "1px solid #e5e7eb",
-                      background: "#f9fafb",
-                      marginBottom: "6px",
-                    }}
-                  >
+                ) : (
+                  selectedDayShows.map((show) => (
                     <div
+                      key={show.id}
                       style={{
-                        fontSize: "13px",
-                        fontWeight: 600,
-                        marginBottom: "2px",
-                        color: "#111827",
+                        background: "#f9fafb",
+                        padding: 8,
+                        borderRadius: 8,
+                        border: "1px solid #e5e7eb",
+                        marginBottom: 6,
                       }}
                     >
-                      {show.name}
+                      <strong>{show.name}</strong>
+                      <br />
+                      <span style={{ fontSize: 12 }}>
+                        {show.federation} • {show.location}
+                      </span>
+                      <br />
+                      {show.url && (
+                        <a href={show.url} style={{ color: "#2563eb", fontSize: 12 }}>
+                          View show
+                        </a>
+                      )}
                     </div>
-                    <div
-                      style={{
-                        fontSize: "11px",
-                        color: "#6b7280",
-                        marginBottom: "2px",
-                      }}
-                    >
-                      {show.federation} · {show.location}
-                    </div>
-                    {show.url && (
-                      <a
-                        href={show.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{
-                          fontSize: "11px",
-                          color: "#2563eb",
-                          textDecoration: "underline",
-                        }}
-                      >
-                        View show details
-                      </a>
-                    )}
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
 
-            {/* Quick filters card */}
+            {/* Quick Filters */}
             <div
               style={{
                 backgroundColor: "#ffffff",
-                borderRadius: "10px",
+                borderRadius: 10,
                 border: "1px solid #e5e7eb",
-                padding: "12px 12px 14px",
+                padding: 14,
               }}
             >
-              <h3
-                style={{
-                  fontSize: "15px",
-                  fontWeight: 700,
-                  marginBottom: "4px",
-                  color: "#111827",
-                }}
-              >
-                Quick searches
-              </h3>
-              <p
-                style={{
-                  fontSize: "12px",
-                  color: "#6b7280",
-                  marginBottom: "8px",
-                }}
-              >
-                Jump straight into common queries.
-              </p>
+              <h4 style={{ fontWeight: 700, marginBottom: 8 }}>Quick Searches</h4>
 
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "6px",
-                  fontSize: "13px",
-                }}
-              >
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 {[
-                  "Olympia 2025 scorecards",
-                  "IFBB Pro show results",
-                  "Classic Physique news",
+                  "Olympia scorecards",
+                  "IFBB Pro results",
                   "NPC national qualifiers",
-                  "Wellness division results",
-                  "Natty federations WNBF",
-                  "Push pull legs split",
-                  "Contest prep diet science",
-                ].map((label) => (
+                  "Classic Physique updates",
+                ].map((tag) => (
                   <button
-                    key={label}
-                    onClick={() => {
-                      const q = encodeURIComponent(label);
-                      window.location.href = `/search?q=${q}`;
-                    }}
+                    key={tag}
+                    onClick={() =>
+                      (window.location.href = `/search?q=${encodeURIComponent(tag)}`)
+                    }
                     style={{
                       textAlign: "left",
-                      borderRadius: "999px",
+                      borderRadius: 999,
+                      padding: "6px 10px",
                       border: "1px solid #e5e7eb",
                       background: "#f9fafb",
-                      padding: "6px 10px",
-                      color: "#111827",
-                      cursor: "pointer",
                     }}
                   >
-                    {label}
+                    {tag}
                   </button>
                 ))}
               </div>
@@ -846,21 +1280,39 @@ export default function HomePage() {
           </aside>
         </section>
 
-        {/* Footer */}
+        {/* ---------- FOOTER ---------- */}
         <footer
           style={{
-            marginTop: "28px",
-            paddingTop: "14px",
+            marginTop: 30,
+            paddingTop: 14,
             borderTop: "1px solid #e5e7eb",
-            fontSize: "11px",
-            color: "#9ca3af",
             textAlign: "center",
+            fontSize: 12,
+            color: "#6b7280",
           }}
         >
-          WorldBodybuildingNews • Aggregating IFBB, NPC & global bodybuilding media into
-          one searchable hub. Data refreshed via scheduled ingests.
+          © WorldBodybuildingNews — Aggregating IFBB, NPC, natural federations & global
+          bodybuilding media.
         </footer>
       </main>
     </div>
   );
 }
+
+/* ------------------ Reusable Style Objects ------------------ */
+const navBtn: React.CSSProperties = {
+  background: "transparent",
+  border: "none",
+  color: "#374151",
+  cursor: "pointer",
+  fontSize: 13,
+  textTransform: "uppercase",
+};
+
+const monthBtn: React.CSSProperties = {
+  background: "transparent",
+  border: "none",
+  fontSize: 16,
+  cursor: "pointer",
+  color: "#6b7280",
+};
