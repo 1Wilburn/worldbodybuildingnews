@@ -58,10 +58,13 @@ async function scrapeNPC() {
   const $ = cheerio.load(indexHTML);
 
   const links: string[] = [];
+
   $("a").each((i: number, el: cheerio.Element) => {
     const href = $(el).attr("href");
-    ...
-});
+    if (href && href.includes("/schedule_event/")) {
+      links.push(href);
+    }
+  });
 
   const uniqueLinks = [...new Set(links)];
 
