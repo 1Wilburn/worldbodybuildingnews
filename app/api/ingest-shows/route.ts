@@ -59,7 +59,7 @@ async function scrapeNPC() {
 
   const links: string[] = [];
 
-  $("a").each((i: number, el: cheerio.Element) => {
+  $("a").each((i, el) => {
     const href = $(el).attr("href");
     if (href && href.includes("/schedule_event/")) {
       links.push(href);
@@ -69,6 +69,7 @@ async function scrapeNPC() {
   const uniqueLinks = [...new Set(links)];
 
   const shows = [];
+
   for (const link of uniqueLinks) {
     try {
       const html = await fetchHTML(link);
@@ -87,7 +88,8 @@ async function scrapeIFBB() {
 
   const $ = cheerio.load(indexHTML);
 
-  const links = [];
+  const links: string[] = [];
+
   $("a").each((i, el) => {
     const href = $(el).attr("href");
     if (href && href.includes("/competition/")) {
@@ -98,6 +100,7 @@ async function scrapeIFBB() {
   const uniqueLinks = [...new Set(links)];
 
   const shows = [];
+
   for (const link of uniqueLinks) {
     try {
       const html = await fetchHTML(link);
