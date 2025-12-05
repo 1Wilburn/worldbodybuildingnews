@@ -1,155 +1,80 @@
 import { NextResponse } from "next/server";
-import * as cheerio from "cheerio";
+
+// -------------------------------
+// ENV VARIABLES (required in Vercel):
+// MEILI_HOST = https://ms-xxxxxxxx.nyc.meilisearch.io
+// MEILI_WRITE_SHOWS_KEY = (your Write-shows key)
+// -------------------------------
 
 const MEILI_HOST = process.env.MEILI_HOST!;
-const MEILI_MASTER_KEY = process.env.MEILI_MASTER_KEY!;
+const MEILI_WRITE_SHOWS_KEY = process.env.MEILI_WRITE_SHOWS_KEY!;
 
-// Fetch HTML with no caching
-async function fetchHTML(url: string) {
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) throw new Error(`Failed to fetch: ${url}`);
-  return await res.text();
-}
-
-/* -------------------- NPC SHOW PAGE PARSER -------------------- */
-function parseNPCShowPage(html: string, url: string) {
-  const $ = cheerio.load(html);
-
-  const title = $("h1").first().text().trim();
-  const rawDate = $("time").first().text().trim();
-  const location = $(".tribe-events-venue, .venue-details")
-    .first()
-    .text()
-    .trim()
-    .replace(/\s+/g, " ");
-
-  return {
-    id: url,
-    name: title || "NPC Contest",
-    federation: "NPC",
-    location,
-    date: rawDate,
-    url,
-  };
-}
-
-/* -------------------- IFBB SHOW PAGE PARSER -------------------- */
-function parseIFBBShowPage(html: string, url: string) {
-  const $ = cheerio.load(html);
-
-  const title = $("h1, .fusion-title-heading").first().text().trim();
-  const rawDate = $(".fusion-events-date, time").first().text().trim();
-  const location = $(".fusion-events-address, .tribe-events-venue")
-    .first()
-    .text()
-    .trim()
-    .replace(/\s+/g, " ");
-
-  return {
-    id: url,
-    name: title || "IFBB Pro Event",
-    federation: "IFBB Pro League",
-    location,
-    date: rawDate,
-    url,
-  };
-}
-
-/* -------------------- SCRAPE NPC -------------------- */
-async function scrapeNPC() {
-  const indexURL = "https://npcnewsonline.com/schedule/";
-  const indexHTML = await fetchHTML(indexURL);
-  const $ = cheerio.load(indexHTML);
-
-  const links: string[] = [];
-
-  $("a").each((_, el: cheerio.AnyNode) => {
-    const href = $(el).attr("href");
-    if (!href) return;
-
-    if (href.includes("/contest-details/") || href.includes("/event/")) {
-      const full = href.startsWith("http") ? href : `https://npcnewsonline.com${href}`;
-      links.push(full);
-    }
-  });
-
-  const uniqueLinks = [...new Set(links)];
-  const shows = [];
-
-  for (const link of uniqueLinks) {
-    try {
-      const html = await fetchHTML(link);
-      shows.push(parseNPCShowPage(html, link));
-    } catch (err) {
-      console.log("NPC scrape error:", link, err);
-    }
-  }
-
-  return shows;
-}
-
-/* -------------------- SCRAPE IFBB -------------------- */
-async function scrapeIFBB() {
-  const indexURL = "https://ifbbpro.com/events/";
-  const indexHTML = await fetchHTML(indexURL);
-  const $ = cheerio.load(indexHTML);
-
-  const links: string[] = [];
-
-  $("a").each((_, el: cheerio.AnyNode) => {
-    const href = $(el).attr("href");
-    if (!href) return;
-
-    if (href.includes("/event/") || href.includes("/competition/")) {
-      const full = href.startsWith("http") ? href : `https://ifbbpro.com${href}`;
-      links.push(full);
-    }
-  });
-
-  const uniqueLinks = [...new Set(links)];
-  const shows = [];
-
-  for (const link of uniqueLinks) {
-    try {
-      const html = await fetchHTML(link);
-      shows.push(parseIFBBShowPage(html, link));
-    } catch (err) {
-      console.log("IFBB scrape error:", link, err);
-    }
-  }
-
-  return shows;
-}
-
-/* -------------------- MAIN GET HANDLER -------------------- */
 export async function GET() {
   try {
-    const npcShows = await scrapeNPC();
-    const ifbbShows = await scrapeIFBB();
+    if (!MEILI_HOST || !MEILI_WRITE_SHOWS_KEY) {
+      return NextResponse.json(
+        { ok: false, message: "Missing MEILI env vars." },
+        { status: 500 }
+      );
+    }
 
-    const allShows = [...npcShows, ...ifbbShows];
+    // ------------------------------------------
+    // 1. Define the show documents to insert
+    // Replace with real scraped shows later
+    // ------------------------------------------
+    const shows = [
+      {
+        id: "npc-east-2025",
+        federation: "NPC",
+        title: "NPC East Coast Championships 2025",
+        date: "2025-11-22",
+        location: "New York, NY",
+        url: "https://npcnewsonline.com",
+      },
+      {
+        id: "ifbb-pro-miami-2025",
+        federation: "IFBB Pro League",
+        title: "IFBB Pro Miami 2025",
+        date: "2025-11-29",
+        location: "Miami, FL",
+        url: "https://ifbbpro.com",
+      }
+    ];
 
-    // PUSH TO MEILISEARCH
-    const res = await fetch(`${MEILI_HOST}/indexes/shows/documents`, {
+    // ------------------------------------------
+    // 2. Send documents to Meilisearch
+    // ------------------------------------------
+    const ingest = await fetch(`${MEILI_HOST}/indexes/shows/documents`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${MEILI_MASTER_KEY}`,
+        "Authorization": `Bearer ${MEILI_WRITE_SHOWS_KEY}`,
       },
-      body: JSON.stringify(allShows),
+      body: JSON.stringify(shows),
     });
 
-    const result = await res.json();
+    const ingestResult = await ingest.json();
 
+    // If Meilisearch returns an error
+    if (ingest.status >= 400) {
+      return NextResponse.json(
+        { ok: false, error: ingestResult },
+        { status: ingest.status }
+      );
+    }
+
+    // ------------------------------------------
+    // 3. Return success
+    // ------------------------------------------
     return NextResponse.json({
       ok: true,
-      indexed: allShows.length,
-      meiliResponse: result,
       message: "Shows index updated.",
+      task: ingestResult,
+      totalInserted: shows.length,
     });
   } catch (err: any) {
     return NextResponse.json(
-      { ok: false, error: err?.message },
+      { ok: false, message: err.message || "Unknown error" },
       { status: 500 }
     );
   }
