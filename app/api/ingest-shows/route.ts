@@ -1,169 +1,39 @@
 import { NextResponse } from "next/server";
-import * as cheerio from "cheerio";
+import { MeiliSearch } from "meilisearch";
+import { scrapeNPCShows } from "./npc-scraper";
+import { scrapeIFBBProShows } from "./ifbbpro-scraper";
+import { normalizeShows } from "./transform";
 
-const MEILI_HOST = process.env.MEILI_HOST!;
-const MEILI_SHOWS_KEY = process.env.MEILI_WRITE_SHOWS_KEY!;
-
-// -------------------------------
-async function fetchHTML(url: string): Promise<string> {
-  try {
-    const res = await fetch(url, { cache: "no-store" });
-    return await res.text();
-  } catch (err) {
-    console.error("Fetch failed:", url);
-    return "";
-  }
-}
-
-// -------------------------------
-function parseNPCShowPage(html: string, url: string) {
-  const $ = cheerio.load(html);
-
-  const title =
-    $("h1").first().text().trim() ||
-    $(".entry-title").first().text().trim() ||
-    "NPC Show";
-
-  const dateText =
-    $("time").first().text().trim() ||
-    $(".event-date").first().text().trim() ||
-    "";
-
-  const location =
-    $(".tribe-events-venue").first().text().trim().replace(/\s+/g, " ") ||
-    $(".location").first().text().trim().replace(/\s+/g, " ") ||
-    "";
-
-  return {
-    id: url,
-    federation: "NPC",
-    name: title,
-    date: dateText,
-    location,
-    url,
-  };
-}
-
-// -------------------------------
-function parseIFBBShowPage(html: string, url: string) {
-  const $ = cheerio.load(html);
-
-  const title =
-    $("h1").first().text().trim() ||
-    $(".fusion-title").first().text().trim() ||
-    "IFBB Pro Show";
-
-  const dateText =
-    $(".fusion-events-date").first().text().trim() ||
-    $("time").first().text().trim() ||
-    "";
-
-  const location =
-    $(".fusion-events-address").first().text().trim().replace(/\s+/g, " ") ||
-    $(".tribe-events-venue").first().text().trim().replace(/\s+/g, " ") ||
-    "";
-
-  return {
-    id: url,
-    federation: "IFBB Pro League",
-    name: title,
-    date: dateText,
-    location,
-    url,
-  };
-}
-
-// -------------------------------
-async function scrapeNPC() {
-  const indexURL = "https://npcnewsonline.com/schedule/";
-  const indexHTML = await fetchHTML(indexURL);
-  const $ = cheerio.load(indexHTML);
-
-  const links: string[] = [];
-  $("a").each((_, el) => {
-    const href = $(el).attr("href");
-    if (href && href.includes("/schedule_event/")) {
-      links.push(href);
-    }
-  });
-
-  const uniqueLinks = [...new Set(links)];
-  const shows = [];
-
-  for (const link of uniqueLinks) {
-    try {
-      const html = await fetchHTML(link);
-      if (html.length < 50) continue;
-      shows.push(parseNPCShowPage(html, link));
-    } catch {
-      console.error("NPC parsing failed for:", link);
-    }
-  }
-
-  return shows;
-}
-
-// -------------------------------
-async function scrapeIFBB() {
-  const indexURL = "https://ifbbpro.com/events/";
-  const indexHTML = await fetchHTML(indexURL);
-  const $ = cheerio.load(indexHTML);
-
-  const links: string[] = [];
-  $("a").each((_, el) => {
-    const href = $(el).attr("href");
-    if (href && href.includes("/competition/")) {
-      links.push(href);
-    }
-  });
-
-  const uniqueLinks = [...new Set(links)];
-  const shows = [];
-
-  for (const link of uniqueLinks) {
-    try {
-      const html = await fetchHTML(link);
-      if (html.length < 50) continue;
-      shows.push(parseIFBBShowPage(html, link));
-    } catch {
-      console.error("IFBB parsing failed for:", link);
-    }
-  }
-
-  return shows;
-}
-
-// -------------------------------
 export async function GET() {
   try {
-    console.log("Scraping NPC + IFBB shows...");
-
-    const npc = await scrapeNPC();
-    const ifbb = await scrapeIFBB();
-    const allShows = [...npc, ...ifbb];
-
-    console.log("TOTAL SHOWS FOUND:", allShows.length);
-
-    const res = await fetch(`${MEILI_HOST}/indexes/shows/documents`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${MEILI_SHOWS_KEY}`,
-      },
-      body: JSON.stringify(allShows),
+    const client = new MeiliSearch({
+      host: process.env.MEILI_HOST!,
+      apiKey: process.env.MEILI_WRITE_KEY!  // your write-shows key
     });
 
-    const json = await res.json();
+    const index = client.index("shows");
+
+    // --- SCRAPE SOURCES ---
+    const [npc, ifbb] = await Promise.all([
+      scrapeNPCShows(),
+      scrapeIFBBProShows(),
+    ]);
+
+    const combined = [...npc, ...ifbb];
+
+    const documents = normalizeShows(combined);
+
+    // replace all existing
+    await index.deleteAllDocuments();
+    const result = await index.addDocuments(documents);
 
     return NextResponse.json({
       ok: true,
-      totalInserted: allShows.length,
-      meiliResponse: json,
+      total: documents.length,
+      shows: documents
     });
+
   } catch (err: any) {
-    return NextResponse.json(
-      { ok: false, error: err?.message || "Unknown error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ ok: false, error: err.message });
   }
 }
