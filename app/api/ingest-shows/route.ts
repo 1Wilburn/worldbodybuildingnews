@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { ShowDocument } from "@/app/lib/show-types";
 
 // -------------------------------
 // ENV VARIABLES (required in Vercel):
