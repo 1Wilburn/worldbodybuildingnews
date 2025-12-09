@@ -2,10 +2,8 @@ import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 
 const MEILI_HOST = process.env.MEILI_HOST!;
-const MEILI_SHOWS_KEY = process.env.MEILI_SHOWS_KEY!;
+const MEILI_SHOWS_KEY = process.env.MEILI_WRITE_SHOWS_KEY!;
 
-// -------------------------------
-// Utility: fetch page HTML
 // -------------------------------
 async function fetchHTML(url: string): Promise<string> {
   try {
@@ -17,8 +15,6 @@ async function fetchHTML(url: string): Promise<string> {
   }
 }
 
-// -------------------------------
-// NPC: Parse individual show page
 // -------------------------------
 function parseNPCShowPage(html: string, url: string) {
   const $ = cheerio.load(html);
@@ -49,8 +45,6 @@ function parseNPCShowPage(html: string, url: string) {
 }
 
 // -------------------------------
-// IFBB PRO: Parse individual show page
-// -------------------------------
 function parseIFBBShowPage(html: string, url: string) {
   const $ = cheerio.load(html);
 
@@ -80,15 +74,12 @@ function parseIFBBShowPage(html: string, url: string) {
 }
 
 // -------------------------------
-// SCRAPE NPC SHOW LIST
-// -------------------------------
 async function scrapeNPC() {
   const indexURL = "https://npcnewsonline.com/schedule/";
   const indexHTML = await fetchHTML(indexURL);
   const $ = cheerio.load(indexHTML);
 
   const links: string[] = [];
-
   $("a").each((_, el) => {
     const href = $(el).attr("href");
     if (href && href.includes("/schedule_event/")) {
@@ -97,8 +88,8 @@ async function scrapeNPC() {
   });
 
   const uniqueLinks = [...new Set(links)];
-
   const shows = [];
+
   for (const link of uniqueLinks) {
     try {
       const html = await fetchHTML(link);
@@ -113,15 +104,12 @@ async function scrapeNPC() {
 }
 
 // -------------------------------
-// SCRAPE IFBB PRO SHOW LIST
-// -------------------------------
 async function scrapeIFBB() {
   const indexURL = "https://ifbbpro.com/events/";
   const indexHTML = await fetchHTML(indexURL);
   const $ = cheerio.load(indexHTML);
 
   const links: string[] = [];
-
   $("a").each((_, el) => {
     const href = $(el).attr("href");
     if (href && href.includes("/competition/")) {
@@ -130,8 +118,8 @@ async function scrapeIFBB() {
   });
 
   const uniqueLinks = [...new Set(links)];
-
   const shows = [];
+
   for (const link of uniqueLinks) {
     try {
       const html = await fetchHTML(link);
@@ -146,20 +134,16 @@ async function scrapeIFBB() {
 }
 
 // -------------------------------
-// MAIN API ROUTE
-// -------------------------------
 export async function GET() {
   try {
     console.log("Scraping NPC + IFBB shows...");
 
     const npc = await scrapeNPC();
     const ifbb = await scrapeIFBB();
-
     const allShows = [...npc, ...ifbb];
 
     console.log("TOTAL SHOWS FOUND:", allShows.length);
 
-    // Push into MeiliSearch
     const res = await fetch(`${MEILI_HOST}/indexes/shows/documents`, {
       method: "POST",
       headers: {
@@ -178,10 +162,7 @@ export async function GET() {
     });
   } catch (err: any) {
     return NextResponse.json(
-      {
-        ok: false,
-        error: err?.message || "Unknown error",
-      },
+      { ok: false, error: err?.message || "Unknown error" },
       { status: 500 }
     );
   }
