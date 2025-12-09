@@ -1,3 +1,24 @@
+function normalizeDate(raw: string): string | null {
+  if (!raw) return null;
+
+  const cleaned = raw.replace(/\s+/g, " ").trim();
+
+  const parsed = new Date(cleaned);
+  if (!isNaN(parsed.getTime())) {
+    return parsed.toISOString().slice(0, 10); // YYYY-MM-DD
+  }
+
+  // Fallback regex for formats like "July 6th 2025"
+  const match = cleaned.match(/([A-Za-z]+)\s+(\d{1,2})(?:st|nd|rd|th)?[, ]+\s*(\d{4})/);
+  if (match) {
+    const date = new Date(`${match[1]} ${match[2]}, ${match[3]}`);
+    if (!isNaN(date.getTime())) {
+      return date.toISOString().slice(0, 10);
+    }
+  }
+
+  return null;
+}
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 
