@@ -51,25 +51,37 @@ export default function HomePage() {
   const [calendarYear, setCalendarYear] = useState(today.getFullYear());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
-  // Placeholder show data — later we can swap this for real scraped / API data
-  const [shows] = useState<ShowEvent[]>([
-    {
-      id: "sample-1",
-      name: "Sample IFBB Pro Show",
-      federation: "IFBB Pro League",
-      location: "Orlando, FL, USA",
-      date: "2025-11-22",
-      url: "https://ifbbpro.com",
-    },
-    {
-      id: "sample-2",
-      name: "Sample NPC Regional Classic",
-      federation: "NPC",
-      location: "New York, NY, USA",
-      date: "2025-11-29",
-      url: "https://npcnewsonline.com",
-    },
-  ]);
+  // REAL SHOW DATA FROM MEILISEARCH
+const [shows, setShows] = useState<ShowEvent[]>([]);
+const [showsLoading, setShowsLoading] = useState(false);
+const [showsError, setShowsError] = useState<string | null>(null);
+
+// Load shows from your Meilisearch index `/api/get-shows`
+useEffect(() => {
+  async function loadShows() {
+    try {
+      setShowsLoading(true);
+      setShowsError(null);
+
+      const res = await fetch("/api/get-shows");
+      const data = await res.json();
+
+      if (data.error) {
+        setShowsError(data.error);
+        return;
+      }
+
+      // data.hits contains MeiliSearch results
+      setShows(data.hits || []);
+    } catch (err: any) {
+      setShowsError(err?.message || "Failed to load shows");
+    } finally {
+      setShowsLoading(false);
+    }
+  }
+
+  loadShows();
+}, [calendarMonth, calendarYear]);
 
   const selectedDayShows = selectedDate
     ? shows.filter((s) => s.date === selectedDate)
