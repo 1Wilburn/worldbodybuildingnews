@@ -1,239 +1,187 @@
-function normalizeDate(raw: string): string | null {
-  if (!raw) return null;
-
-  const cleaned = raw.replace(/\s+/g, " ").trim();
-
-  const parsed = new Date(cleaned);
-  if (!isNaN(parsed.getTime())) {
-    return parsed.toISOString().slice(0, 10); // YYYY-MM-DD
-  }
-
-  // Fallback regex for formats like "July 6th 2025"
-  const match = cleaned.match(/([A-Za-z]+)\s+(\d{1,2})(?:st|nd|rd|th)?[, ]+\s*(\d{4})/);
-  if (match) {
-    const date = new Date(`${match[1]} ${match[2]}, ${match[3]}`);
-    if (!isNaN(date.getTime())) {
-      return date.toISOString().slice(0, 10);
-    }
-  }
-
-  return null;
-}
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 
 const MEILI_HOST = process.env.MEILI_HOST!;
-const MEILI_WRITE_SHOWS = process.env.MEILI_WRITE_SHOWS!; // the new WRITE key
+const MEILI_SHOWS_KEY = process.env.MEILI_SHOWS_KEY!;
 
-async function fetchHTML(url: string) {
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) throw new Error("Failed to fetch: " + url);
-  return await res.text();
-}
-
-/* --------------------------------------------------
-   HELPERS
--------------------------------------------------- */
-
-function normalizeDate(raw: string): string | null {
-  if (!raw) return null;
-
-  // Try native Date parsing
-  const d = new Date(raw);
-  if (!isNaN(d.getTime())) {
-    return d.toISOString().slice(0, 10);
+// -------------------------------
+// Utility: fetch page HTML
+// -------------------------------
+async function fetchHTML(url: string): Promise<string> {
+  try {
+    const res = await fetch(url, { cache: "no-store" });
+    return await res.text();
+  } catch (err) {
+    console.error("Fetch failed:", url);
+    return "";
   }
-
-  // Manual formats (NPC sometimes uses “January 20, 2025”)
-  const cleaned = raw.replace(/\s+/g, " ").trim();
-  const parsed = Date.parse(cleaned);
-
-  if (!isNaN(parsed)) {
-    return new Date(parsed).toISOString().slice(0, 10);
-  }
-
-  return null;
 }
 
-function cleanText(t: string | undefined): string {
-  if (!t) return "";
-  return t.replace(/\s+/g, " ").trim();
-}
-
-/* --------------------------------------------------
-   PARSE NPC EVENT PAGE
--------------------------------------------------- */
-
+// -------------------------------
+// NPC: Parse individual show page
+// -------------------------------
 function parseNPCShowPage(html: string, url: string) {
   const $ = cheerio.load(html);
 
-  const title = cleanText($("h1.entry-title").text()) ||
-                cleanText($("h1").first().text());
+  const title =
+    $("h1").first().text().trim() ||
+    $(".entry-title").first().text().trim() ||
+    "NPC Show";
 
   const dateText =
-    cleanText($("time").first().text()) ||
-    cleanText($(".tribe-event-date-start").text());
+    $("time").first().text().trim() ||
+    $(".event-date").first().text().trim() ||
+    "";
 
   const location =
-    cleanText($(".tribe-events-venue-details").text()) ||
-    cleanText($(".tribe-events-venue").text());
-
-  const normalized = normalizeDate(dateText);
-
-  if (!title || !normalized) {
-    console.log("NPC SKIPPED (Missing data):", url);
-    return null;
-  }
+    $(".tribe-events-venue").first().text().trim().replace(/\s+/g, " ") ||
+    $(".location").first().text().trim().replace(/\s+/g, " ") ||
+    "";
 
   return {
     id: url,
     federation: "NPC",
-    title,
+    name: title,
+    date: dateText,
     location,
-    date: normalized,
     url,
   };
 }
 
-/* --------------------------------------------------
-   PARSE IFBB PRO EVENT PAGE
--------------------------------------------------- */
-
+// -------------------------------
+// IFBB PRO: Parse individual show page
+// -------------------------------
 function parseIFBBShowPage(html: string, url: string) {
   const $ = cheerio.load(html);
 
   const title =
-    cleanText($("h1.fusion-page-title").text()) ||
-    cleanText($("h1").first().text());
+    $("h1").first().text().trim() ||
+    $(".fusion-title").first().text().trim() ||
+    "IFBB Pro Show";
 
   const dateText =
-    cleanText($(".fusion-events-meta-info").text()) ||
-    cleanText($(".fusion-events-date").text()) ||
-    cleanText($("time").text());
+    $(".fusion-events-date").first().text().trim() ||
+    $("time").first().text().trim() ||
+    "";
 
   const location =
-    cleanText($(".fusion-events-address").text()) ||
-    cleanText($(".tribe-events-venue").text());
-
-  const normalized = normalizeDate(dateText);
-
-  if (!title || !normalized) {
-    console.log("IFBB SKIPPED (Missing data):", url);
-    return null;
-  }
+    $(".fusion-events-address").first().text().trim().replace(/\s+/g, " ") ||
+    $(".tribe-events-venue").first().text().trim().replace(/\s+/g, " ") ||
+    "";
 
   return {
     id: url,
     federation: "IFBB Pro League",
-    title,
+    name: title,
+    date: dateText,
     location,
-    date: normalized,
     url,
   };
 }
 
-/* --------------------------------------------------
-   SCRAPE NPC SCHEDULE
--------------------------------------------------- */
-
+// -------------------------------
+// SCRAPE NPC SHOW LIST
+// -------------------------------
 async function scrapeNPC() {
-  const base = "https://npcnewsonline.com/schedule/";
-  const indexHTML = await fetchHTML(base);
+  const indexURL = "https://npcnewsonline.com/schedule/";
+  const indexHTML = await fetchHTML(indexURL);
   const $ = cheerio.load(indexHTML);
 
-  const links = new Set<string>();
+  const links: string[] = [];
 
   $("a").each((_, el) => {
     const href = $(el).attr("href");
-    if (!href) return;
-    if (href.includes("/event/") || href.includes("/contest/")) {
-      if (href.startsWith("http")) links.add(href);
-      else links.add("https://npcnewsonline.com" + href);
+    if (href && href.includes("/schedule_event/")) {
+      links.push(href);
     }
   });
 
+  const uniqueLinks = [...new Set(links)];
+
   const shows = [];
-  for (const link of links) {
+  for (const link of uniqueLinks) {
     try {
       const html = await fetchHTML(link);
-      const show = parseNPCShowPage(html, link);
-      if (show) shows.push(show);
-    } catch (e) {
-      console.log("NPC ERROR:", link);
+      if (html.length < 50) continue;
+      shows.push(parseNPCShowPage(html, link));
+    } catch {
+      console.error("NPC parsing failed for:", link);
     }
   }
 
   return shows;
 }
 
-/* --------------------------------------------------
-   SCRAPE IFBB PRO SCHEDULE
--------------------------------------------------- */
-
+// -------------------------------
+// SCRAPE IFBB PRO SHOW LIST
+// -------------------------------
 async function scrapeIFBB() {
-  const base = "https://ifbbpro.com/events/";
-  const indexHTML = await fetchHTML(base);
+  const indexURL = "https://ifbbpro.com/events/";
+  const indexHTML = await fetchHTML(indexURL);
   const $ = cheerio.load(indexHTML);
 
-  const links = new Set<string>();
+  const links: string[] = [];
 
   $("a").each((_, el) => {
     const href = $(el).attr("href");
-    if (!href) return;
-    if (href.includes("/event/") || href.includes("/competition/")) {
-      if (href.startsWith("http")) links.add(href);
-      else links.add("https://ifbbpro.com" + href);
+    if (href && href.includes("/competition/")) {
+      links.push(href);
     }
   });
 
+  const uniqueLinks = [...new Set(links)];
+
   const shows = [];
-  for (const link of links) {
+  for (const link of uniqueLinks) {
     try {
       const html = await fetchHTML(link);
-      const show = parseIFBBShowPage(html, link);
-      if (show) shows.push(show);
-    } catch (e) {
-      console.log("IFBB ERROR:", link);
+      if (html.length < 50) continue;
+      shows.push(parseIFBBShowPage(html, link));
+    } catch {
+      console.error("IFBB parsing failed for:", link);
     }
   }
 
   return shows;
 }
 
-/* --------------------------------------------------
-   MAIN API HANDLER
--------------------------------------------------- */
-
+// -------------------------------
+// MAIN API ROUTE
+// -------------------------------
 export async function GET() {
   try {
+    console.log("Scraping NPC + IFBB shows...");
+
     const npc = await scrapeNPC();
     const ifbb = await scrapeIFBB();
 
-    const all = [...npc, ...ifbb];
+    const allShows = [...npc, ...ifbb];
 
-    // Remove duplicates by URL
-    const unique = Array.from(
-      new Map(all.map((s) => [s.id, s])).values()
-    );
+    console.log("TOTAL SHOWS FOUND:", allShows.length);
 
-    // Push into Meilisearch
-    await fetch(`${MEILI_HOST}/indexes/shows/documents`, {
+    // Push into MeiliSearch
+    const res = await fetch(`${MEILI_HOST}/indexes/shows/documents`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${MEILI_WRITE_SHOWS}`,
+        Authorization: `Bearer ${MEILI_SHOWS_KEY}`,
       },
-      body: JSON.stringify(unique),
+      body: JSON.stringify(allShows),
     });
+
+    const json = await res.json();
 
     return NextResponse.json({
       ok: true,
-      inserted: unique.length,
-      message: "Shows index updated successfully.",
+      totalInserted: allShows.length,
+      meiliResponse: json,
     });
   } catch (err: any) {
     return NextResponse.json(
-      { ok: false, error: err?.message },
+      {
+        ok: false,
+        error: err?.message || "Unknown error",
+      },
       { status: 500 }
     );
   }
