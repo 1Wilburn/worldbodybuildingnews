@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import cheerio from "cheerio";
+import * as cheerio from "cheerio"; 
 import { MeiliSearch } from "meilisearch";
 import { normalizeDate } from "@/app/lib/normalize-date";
 
@@ -33,64 +33,59 @@ export async function POST(req: Request) {
 
 async function runIngest() {
   try {
-    const url = "https://npcnewsonline.com/contests/";
+    const contestsUrl = "https://npcnewsonline.com/contests/";
 
-    const response = await fetch(url, {
+    const response = await fetch(contestsUrl, {
       headers: { "User-Agent": "Mozilla/5.0" }
     });
 
     const html = await response.text();
+
     const $ = cheerio.load(html);
 
     const shows: any[] = [];
 
-    // ----------- FIXED SELECTORS -------------
     $(".masonry-item").each((_, el) => {
       const title =
         $(el).find(".contest-title").text().trim() ||
         $(el).find("h3").text().trim() ||
         null;
 
+      if (!title) return;
+
       const location =
         $(el).find(".contest-location").text().trim() ||
         $(el).find(".location").text().trim() ||
-        null;
+        "";
 
       const dateText =
         $(el).find(".contest-date").text().trim() ||
         $(el).find(".date").text().trim() ||
-        null;
+        "";
 
-      const link =
-        $(el).find("a").attr("href") ||
-        null;
-
-      if (!title) return; // MUST HAVE
+      const link = $(el).find("a").attr("href") || contestsUrl;
 
       shows.push({
         title,
-        location: location || "",
-        date: normalizeDate(dateText || ""),
-        sourceUrl: link ? link : url
+        location,
+        date: normalizeDate(dateText),
+        sourceUrl: link,
       });
     });
 
-    // Avoid crash if no shows parsed
     if (shows.length === 0) {
       return NextResponse.json({
         success: false,
-        error: "No shows parsed — selectors likely changed.",
+        error: "Selectors returned no shows. Page structure likely changed.",
       });
     }
 
-    // -------- Meilisearch ----------
     const client = new MeiliSearch({
       host: process.env.MEILI_HOST!,
       apiKey: process.env.MEILI_WRITE_SHOWS_KEY!,
     });
 
     const index = client.index("shows");
-
     const task = await index.addDocuments(shows);
 
     return NextResponse.json({
