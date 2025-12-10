@@ -1,105 +1,74 @@
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
-import { v4 as uuidv4 } from "uuid";
-import { parse, format } from "date-fns";
+import { MeiliSearch } from "meilisearch";
+import { normalizeDate } from "@/app/lib/normalize-date";
 
-/* -------------------------------------------
-   Utility: Safe date normalizer
--------------------------------------------- */
-function normalizeDate(dateText: string | null): string {
-  if (!dateText || typeof dateText !== "string") {
-    return ""; // fallback
-  }
+/* ENV VARS */
+const MEILI_HOST = process.env.MEILI_HOST!;
+const MEILI_WRITE_KEY = process.env.MEILI_WRITE_SHOWS_KEY!;
 
+/* ALLOW BROWSER GET / HEAD / POST */
+export const GET = handler;
+export const POST = handler;
+export const HEAD = () => new Response("OK", { status: 200 });
+
+async function handler() {
   try {
-    const parsed = parse(dateText.trim(), "MMMM d, yyyy", new Date());
-    return format(parsed, "yyyy-MM-dd");
-  } catch (error) {
-    return "";
-  }
-}
+    const client = new MeiliSearch({
+      host: MEILI_HOST,
+      apiKey: MEILI_WRITE_KEY,
+    });
 
-/* -------------------------------------------
-   Utility: Fetch HTML safely
--------------------------------------------- */
-async function fetchHTML(url: string): Promise<string | null> {
-  try {
-    const res = await fetch(url);
-    if (!res.ok) return null;
-    return await res.text();
-  } catch (error) {
-    return null;
-  }
-}
+    const index = client.index("shows");
 
-/* -------------------------------------------
-   SCRAPER: Example ingestion from a webpage
--------------------------------------------- */
-async function scrapeShows() {
-  const url = "https://www.ifbbpro.com/events"; // example URL
-  const html = await fetchHTML(url);
+    const urls = [
+      "https://npcnewsonline.com/contests/",
+      "https://ifbb.com/events/",
+    ];
 
-  if (!html) return [];
+    const allShows: any[] = [];
 
-  const $ = cheerio.load(html);
-  const shows: any[] = [];
+    for (const url of urls) {
+      const res = await fetch(url);
+      const html = await res.text();
+      const $ = cheerio.load(html);
 
-  $(".event-card").each((i, el) => {
-    const title = $(el).find(".event-title").text().trim() || "Untitled Event";
-    const location = $(el).find(".event-location").text().trim() || "";
-    const dateText = $(el).find(".event-date").text().trim() || null;
+      $("article, .event-item, .contest-item").each((i, el) => {
+        const title = $(el).find("h2, .event-title, .contest-title").text().trim();
+        const dateText = $(el).find(".date, time, .event-date").text().trim();
+        const location = $(el).find(".location, .event-location").text().trim();
 
-    const show = {
-      id: uuidv4(),
-      title,
-      location,
-      date: normalizeDate(dateText),
-      sourceUrl: url
-    };
+        if (!title) return;
 
-    shows.push(show);
-  });
+        allShows.push({
+          id: `${Date.now()}-${i}`,
+          title,
+          location: location || "",
+          date: normalizeDate(dateText),
+          sourceUrl: url,
+        });
+      });
+    }
 
-  return shows;
-}
+    if (allShows.length === 0) {
+      return NextResponse.json({
+        success: false,
+        message: "No shows scraped",
+      });
+    }
 
-/* -------------------------------------------
-   POST: Ingest into Meilisearch
--------------------------------------------- */
-export async function POST() {
-  try {
-    const shows = await scrapeShows();
-
-    const res = await fetch(
-      `${process.env.MEILI_HOST}/indexes/shows/documents`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.MEILI_WRITE_KEY}`
-        },
-        body: JSON.stringify(shows)
-      }
-    );
-
-    const data = await res.json();
+    const task = await index.addDocuments(allShows);
 
     return NextResponse.json({
       success: true,
-      count: shows.length,
-      data
+      count: allShows.length,
+      data: task,
     });
-  } catch (error: any) {
+
+  } catch (err: any) {
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: err.message },
       { status: 500 }
     );
   }
-}
-
-/* -------------------------------------------
-   GET: Allows triggering ingestion manually
--------------------------------------------- */
-export async function GET() {
-  return POST();
 }
