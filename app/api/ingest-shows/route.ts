@@ -1,74 +1,75 @@
 import { NextResponse } from "next/server";
-import * as cheerio from "cheerio";
 import { MeiliSearch } from "meilisearch";
+import cheerio from "cheerio";
 import { normalizeDate } from "@/app/lib/normalize-date";
 
-/* ENV VARS */
-const MEILI_HOST = process.env.MEILI_HOST!;
-const MEILI_WRITE_KEY = process.env.MEILI_WRITE_SHOWS_KEY!;
+export const dynamic = "force-dynamic";
 
-/* ALLOW BROWSER GET / HEAD / POST */
-export const GET = handler;
-export const POST = handler;
-export const HEAD = () => new Response("OK", { status: 200 });
+/**
+ * Allow GET for browser testing
+ * Require secret key for authorization
+ */
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const secret = url.searchParams.get("secret");
 
-async function handler() {
-  try {
-    const client = new MeiliSearch({
-      host: MEILI_HOST,
-      apiKey: MEILI_WRITE_KEY,
-    });
-
-    const index = client.index("shows");
-
-    const urls = [
-      "https://npcnewsonline.com/contests/",
-      "https://ifbb.com/events/",
-    ];
-
-    const allShows: any[] = [];
-
-    for (const url of urls) {
-      const res = await fetch(url);
-      const html = await res.text();
-      const $ = cheerio.load(html);
-
-      $("article, .event-item, .contest-item").each((i, el) => {
-        const title = $(el).find("h2, .event-title, .contest-title").text().trim();
-        const dateText = $(el).find(".date, time, .event-date").text().trim();
-        const location = $(el).find(".location, .event-location").text().trim();
-
-        if (!title) return;
-
-        allShows.push({
-          id: `${Date.now()}-${i}`,
-          title,
-          location: location || "",
-          date: normalizeDate(dateText),
-          sourceUrl: url,
-        });
-      });
-    }
-
-    if (allShows.length === 0) {
-      return NextResponse.json({
-        success: false,
-        message: "No shows scraped",
-      });
-    }
-
-    const task = await index.addDocuments(allShows);
-
-    return NextResponse.json({
-      success: true,
-      count: allShows.length,
-      data: task,
-    });
-
-  } catch (err: any) {
+  if (secret !== process.env.INGEST_SECRET) {
     return NextResponse.json(
-      { success: false, error: err.message },
-      { status: 500 }
+      { success: false, error: "Unauthorized" },
+      { status: 401 }
     );
   }
+
+  return runIngestion();
+}
+
+export async function POST(request: Request) {
+  const { secret } = await request.json();
+
+  if (secret !== process.env.INGEST_SECRET) {
+    return NextResponse.json(
+      { success: false, error: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
+  return runIngestion();
+}
+
+// ---------------------------
+// MAIN INGESTION LOGIC
+// ---------------------------
+async function runIngestion() {
+  const host = process.env.MEILI_HOST!;
+  const key = process.env.MEILI_WRITE_SHOWS_KEY!;
+
+  const client = new MeiliSearch({ host, apiKey: key });
+  const index = client.index("shows");
+
+  const res = await fetch("https://npcnewsonline.com/contests/");
+  const html = await res.text();
+  const $ = cheerio.load(html);
+
+  const shows: any[] = [];
+
+  $(".contest-item").each((_, el) => {
+    const title = $(el).find(".contest-title").text().trim();
+    const location = $(el).find(".contest-location").text().trim();
+    const dateText = $(el).find(".contest-date").text().trim();
+
+    shows.push({
+      title,
+      location,
+      date: normalizeDate(dateText),
+      sourceUrl: "https://npcnewsonline.com/contests/",
+    });
+  });
+
+  const task = await index.addDocuments(shows);
+
+  return NextResponse.json({
+    success: true,
+    inserted: shows.length,
+    task,
+  });
 }
