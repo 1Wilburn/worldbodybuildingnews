@@ -15,7 +15,8 @@
     "uuid": "^9.0.1",
     "date-fns": "^2.30.0",
     "cheerio": "^1.0.0-rc.12",
-    "meilisearch": "^0.36.0"
+    "meilisearch": "^0.36.0",
+    "@supabase/supabase-js": "^2.43.1"
   },
   "devDependencies": {
     "@types/node": "20.12.7",
