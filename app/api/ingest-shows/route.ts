@@ -5,9 +5,8 @@ import { normalizeDate } from "@/app/lib/normalize-date";
 
 export const dynamic = "force-dynamic";
 
-// Allow browser GET for testing
-export async function GET(request: Request) {
-  const url = new URL(request.url);
+export async function GET(req: Request) {
+  const url = new URL(req.url);
   const secret = url.searchParams.get("secret");
 
   if (secret !== process.env.INGEST_SECRET) {
@@ -17,12 +16,11 @@ export async function GET(request: Request) {
     );
   }
 
-  return ingestShows();
+  return runIngest();
 }
 
-// Allow POST (optional)
-export async function POST(request: Request) {
-  const { secret } = await request.json();
+export async function POST(req: Request) {
+  const { secret } = await req.json();
   if (secret !== process.env.INGEST_SECRET) {
     return NextResponse.json(
       { success: false, error: "Unauthorized" },
@@ -30,42 +28,65 @@ export async function POST(request: Request) {
     );
   }
 
-  return ingestShows();
+  return runIngest();
 }
 
-// ----------------------
-// MAIN INGEST FUNCTION
-// ----------------------
-async function ingestShows() {
+async function runIngest() {
   try {
-    const res = await fetch("https://npcnewsonline.com/contests/", {
-      headers: { "User-Agent": "Mozilla/5.0" } // avoids blocking
+    const url = "https://npcnewsonline.com/contests/";
+
+    const response = await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0" }
     });
 
-    const html = await res.text();
+    const html = await response.text();
     const $ = cheerio.load(html);
 
     const shows: any[] = [];
 
-    $(".contest-item").each((_, el) => {
-      const title = $(el).find(".contest-title").text().trim();
-      const location = $(el).find(".contest-location").text().trim();
-      const dateText = $(el).find(".contest-date").text().trim();
+    // ----------- FIXED SELECTORS -------------
+    $(".masonry-item").each((_, el) => {
+      const title =
+        $(el).find(".contest-title").text().trim() ||
+        $(el).find("h3").text().trim() ||
+        null;
 
-      if (!title) return;
+      const location =
+        $(el).find(".contest-location").text().trim() ||
+        $(el).find(".location").text().trim() ||
+        null;
+
+      const dateText =
+        $(el).find(".contest-date").text().trim() ||
+        $(el).find(".date").text().trim() ||
+        null;
+
+      const link =
+        $(el).find("a").attr("href") ||
+        null;
+
+      if (!title) return; // MUST HAVE
 
       shows.push({
         title,
-        location,
-        date: normalizeDate(dateText),
-        sourceUrl: "https://npcnewsonline.com/contests/"
+        location: location || "",
+        date: normalizeDate(dateText || ""),
+        sourceUrl: link ? link : url
       });
     });
 
-    // Connect to Meilisearch
+    // Avoid crash if no shows parsed
+    if (shows.length === 0) {
+      return NextResponse.json({
+        success: false,
+        error: "No shows parsed — selectors likely changed.",
+      });
+    }
+
+    // -------- Meilisearch ----------
     const client = new MeiliSearch({
       host: process.env.MEILI_HOST!,
-      apiKey: process.env.MEILI_WRITE_SHOWS_KEY!
+      apiKey: process.env.MEILI_WRITE_SHOWS_KEY!,
     });
 
     const index = client.index("shows");
@@ -75,11 +96,14 @@ async function ingestShows() {
     return NextResponse.json({
       success: true,
       count: shows.length,
-      task
+      task,
     });
   } catch (err: any) {
     return NextResponse.json(
-      { success: false, error: err.message ?? "Unknown error" },
+      {
+        success: false,
+        error: err?.message || "Unknown server error",
+      },
       { status: 500 }
     );
   }
