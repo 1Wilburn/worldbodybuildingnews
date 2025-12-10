@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import * as cheerio from "cheerio"; 
+import * as cheerio from "cheerio";
 import { MeiliSearch } from "meilisearch";
 import { normalizeDate } from "@/app/lib/normalize-date";
 
@@ -10,22 +10,7 @@ export async function GET(req: Request) {
   const secret = url.searchParams.get("secret");
 
   if (secret !== process.env.INGEST_SECRET) {
-    return NextResponse.json(
-      { success: false, error: "Unauthorized" },
-      { status: 401 }
-    );
-  }
-
-  return runIngest();
-}
-
-export async function POST(req: Request) {
-  const { secret } = await req.json();
-  if (secret !== process.env.INGEST_SECRET) {
-    return NextResponse.json(
-      { success: false, error: "Unauthorized" },
-      { status: 401 }
-    );
+    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
   }
 
   return runIngest();
@@ -40,27 +25,22 @@ async function runIngest() {
     });
 
     const html = await response.text();
-
     const $ = cheerio.load(html);
 
     const shows: any[] = [];
 
-    $(".masonry-item").each((_, el) => {
-      const title =
-        $(el).find(".contest-title").text().trim() ||
-        $(el).find("h3").text().trim() ||
-        null;
-
+    $(".contest-list-item").each((_, el) => {
+      const title = $(el).find("h2.title").text().trim();
       if (!title) return;
 
       const location =
-        $(el).find(".contest-location").text().trim() ||
         $(el).find(".location").text().trim() ||
+        $(el).find(".contest-location").text().trim() ||
         "";
 
       const dateText =
-        $(el).find(".contest-date").text().trim() ||
         $(el).find(".date").text().trim() ||
+        $(el).find(".contest-date").text().trim() ||
         "";
 
       const link = $(el).find("a").attr("href") || contestsUrl;
@@ -76,7 +56,7 @@ async function runIngest() {
     if (shows.length === 0) {
       return NextResponse.json({
         success: false,
-        error: "Selectors returned no shows. Page structure likely changed.",
+        error: "Selectors returned no shows. NPC page structure changed.",
       });
     }
 
@@ -93,12 +73,10 @@ async function runIngest() {
       count: shows.length,
       task,
     });
+
   } catch (err: any) {
     return NextResponse.json(
-      {
-        success: false,
-        error: err?.message || "Unknown server error",
-      },
+      { success: false, error: err?.message || "Unknown error" },
       { status: 500 }
     );
   }
