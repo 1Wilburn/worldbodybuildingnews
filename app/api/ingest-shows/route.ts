@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import * as cheerio from "cheerio";
 import { MeiliSearch } from "meilisearch";
 import { normalizeDate } from "@/app/lib/normalize-date";
 
@@ -7,58 +6,27 @@ export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
-  const secret = url.searchParams.get("secret");
 
+  const secret = url.searchParams.get("secret");
   if (secret !== process.env.INGEST_SECRET) {
     return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
   }
 
-  return runIngest();
-}
-
-async function runIngest() {
   try {
-    const contestsUrl = "https://npcnewsonline.com/contests/";
+    const apiUrl = "https://npcnewsonline.com/wp-json/wp/v2/contest?per_page=100";
 
-    const response = await fetch(contestsUrl, {
-      headers: { "User-Agent": "Mozilla/5.0" }
+    const res = await fetch(apiUrl, {
+      headers: { "User-Agent": "Mozilla/5.0" },
     });
 
-    const html = await response.text();
-    const $ = cheerio.load(html);
+    const contests = await res.json();
 
-    const shows: any[] = [];
-
-    $(".contest-list-item").each((_, el) => {
-      const title = $(el).find("h2.title").text().trim();
-      if (!title) return;
-
-      const location =
-        $(el).find(".location").text().trim() ||
-        $(el).find(".contest-location").text().trim() ||
-        "";
-
-      const dateText =
-        $(el).find(".date").text().trim() ||
-        $(el).find(".contest-date").text().trim() ||
-        "";
-
-      const link = $(el).find("a").attr("href") || contestsUrl;
-
-      shows.push({
-        title,
-        location,
-        date: normalizeDate(dateText),
-        sourceUrl: link,
-      });
-    });
-
-    if (shows.length === 0) {
-      return NextResponse.json({
-        success: false,
-        error: "Selectors returned no shows. NPC page structure changed.",
-      });
-    }
+    const shows = contests.map((c: any) => ({
+      title: c.title?.rendered || "",
+      location: c.meta?.location || "",
+      date: normalizeDate(c.meta?.date || ""),
+      sourceUrl: c.link,
+    }));
 
     const client = new MeiliSearch({
       host: process.env.MEILI_HOST!,
@@ -74,9 +42,9 @@ async function runIngest() {
       task,
     });
 
-  } catch (err: any) {
+  } catch (error: any) {
     return NextResponse.json(
-      { success: false, error: err?.message || "Unknown error" },
+      { success: false, error: error.message },
       { status: 500 }
     );
   }
